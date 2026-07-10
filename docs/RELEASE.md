@@ -39,7 +39,23 @@
 
 ## Kênh phát hành
 
-### 1. GitHub (chạy trực tiếp qua npx)
+### 1. npm (khuyến nghị)
+
+```bash
+npm login                    # đăng nhập lần đầu
+npm publish --dry-run        # xem trước file sẽ đóng gói
+npm publish --access public  # publish thật
+```
+
+Lưu ý:
+
+- Field `files` trong `package.json` giới hạn chỉ đóng gói `dist/` (không publish `src/`, `scripts/`, `.env`).
+- Script `prepare` tự chạy `build` trước khi publish → `dist/index.js` luôn mới.
+- npm không cho publish trùng version — phải bump version trong `package.json` cho mỗi lần publish.
+
+Người dùng cài qua: `npx conf-mcp@latest` hoặc `npm i -g conf-mcp`.
+
+### 2. GitHub (chạy trực tiếp qua npx)
 
 ```bash
 npx github:pnam16/confluence-mcp
@@ -50,7 +66,7 @@ Không publish npm. Khi cài từ git, npm tự chạy script `prepare` (đã c�
 - Repo GitHub ở chế độ **public**.
 - Đã push commit mới nhất (bao gồm `package.json` có script `prepare`).
 
-### 2. Zip thủ công (release/conf-mcp-v<version>.zip)
+### 3. Zip thủ công (release/conf-mcp-v<version>.zip)
 
 Dùng cho người dùng không có npm/git, xem [Hướng dẫn sử dụng](USAGE.md#cài-đặt-từ-file-zip-release).
 
