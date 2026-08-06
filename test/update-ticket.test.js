@@ -53,3 +53,41 @@ test("update_ticket reports Jira's silent rejection of a Sub-task parent change"
   assert.match(result.content[0].text, /still "no parent"/);
   assert.match(result.content[0].text, /Move" action/);
 });
+
+test("update_ticket succeeds when Jira applies the requested Epic Link", async () => {
+  const server = fakeServer();
+  const calls = [];
+  const fakeJira = async (method, path) => {
+    calls.push(`${method} ${path}`);
+    if (method === "PUT") return null;
+    return {fields: {customfield_10001: "PROJ-9"}};
+  };
+  registerUpdateTicket(server, fakeJira);
+
+  const result = await server.tools.get("update_ticket")({
+    epic_key: "PROJ-9",
+    ticket_id: "PROJ-1",
+  });
+  assert.equal(result.content[0].text, "PROJ-1 updated successfully");
+  assert.deepEqual(calls, [
+    "PUT /issue/PROJ-1",
+    "GET /issue/PROJ-1?fields=customfield_10001",
+  ]);
+});
+
+test("update_ticket reports Jira's silent rejection of an Epic Link change", async () => {
+  const server = fakeServer();
+  const fakeJira = async (method) => {
+    if (method === "PUT") return null;
+    return {fields: {customfield_10001: undefined}};
+  };
+  registerUpdateTicket(server, fakeJira);
+
+  const result = await server.tools.get("update_ticket")({
+    epic_key: "PROJ-9",
+    ticket_id: "PROJ-1",
+  });
+  assert.equal(result.isError, true);
+  assert.match(result.content[0].text, /still "no epic"/);
+  assert.match(result.content[0].text, /Sub-tasks or Epics themselves/);
+});
