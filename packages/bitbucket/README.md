@@ -53,6 +53,11 @@ Or add it to `.mcp.json`:
 
 The server runs on stdio, so it needs no port and no container.
 
+Official setup guides:
+
+- Claude Code: [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp) explains `claude mcp add`, the local, project and user scopes, and the shared `.mcp.json` file.
+- Claude Desktop: [Connect to local MCP servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers) shows, with screenshots, how to open `claude_desktop_config.json` from Settings, Developer, Edit Config, and where to find the logs when a server does not start.
+
 ## Environment variables
 
 | Variable              | Required | Description                                                         |
