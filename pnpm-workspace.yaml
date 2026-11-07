@@ -1,8 +1,5 @@
 packages:
   - packages/*
 
-allowBuilds:
-  esbuild: true
-
 overrides:
   parse-url: ^11.1.0

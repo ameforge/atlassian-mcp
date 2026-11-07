@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "^2.6.5",
+    "@biomejs/biome": "^2.6.6",
     "@types/node": "^26.6.6",
     "release-it": "^20.2.1",
     "typescript": "^6.0.3"
@@ -12,6 +12,12 @@
     "build": "pnpm -r build",
     "check": "biome check . && tsc --noEmit",
     "lint": "biome migrate --write && biome check --write . && tsc --noEmit",
+    "publish:atlassian": "pnpm -C packages/atlassian publish",
+    "publish:conf": "pnpm -C packages/confluence publish",
+    "publish:jira": "pnpm -C packages/jira publish",
+    "release:atlassian": "pnpm -C packages/atlassian release",
+    "release:conf": "pnpm -C packages/confluence release",
+    "release:jira": "pnpm -C packages/jira release",
     "test": "pnpm -r test",
     "update": "pnpm update -r"
   },

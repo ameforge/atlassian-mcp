@@ -1,0 +1,70 @@
+name: Publish
+
+on:
+  push:
+    tags: ["jira-v*", "conf-v*", "atlassian-v*"]
+
+permissions:
+  contents: write # gh release create
+  id-token: write # npm trusted publishing (OIDC)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # release notes need the previous tag of this package
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1+; Node 22 ships npm 10.
+      - run: npm install -g npm@^11.5.1
+      - run: pnpm install --frozen-lockfile
+
+      - name: Resolve package from tag
+        id: pkg
+        run: |
+          prefix="${GITHUB_REF_NAME%%v*}v"
+          case "$prefix" in
+            jira-v) dir=jira name=jira-mcp ;;
+            conf-v) dir=confluence name=conf-mcp ;;
+            atlassian-v) dir=atlassian name=atlassian-mcp ;;
+            *) echo "Unknown tag $GITHUB_REF_NAME"; exit 1 ;;
+          esac
+          version="${GITHUB_REF_NAME#"$prefix"}"
+          actual=$(node -p "require('./packages/$dir/package.json').version")
+          if [ "$actual" != "$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match packages/$dir version $actual"; exit 1
+          fi
+          {
+            echo "dir=packages/$dir"
+            echo "prefix=$prefix"
+            echo "title=$name v$version"
+          } >> "$GITHUB_OUTPUT"
+
+      - run: pnpm -w run check
+      - run: pnpm test
+      - run: pnpm build
+
+      # pnpm pack turns workspace:* into real versions; npm publish handles OIDC.
+      - name: Publish to npm
+        run: |
+          pnpm -C "${{ steps.pkg.outputs.dir }}" pack --pack-destination "$RUNNER_TEMP/pkg"
+          npm publish "$RUNNER_TEMP"/pkg/*.tgz --access public
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREFIX: ${{ steps.pkg.outputs.prefix }}
+          TITLE: ${{ steps.pkg.outputs.title }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && exit 0
+          previous=$(git tag --list "${PREFIX}*" --sort=-v:refname | grep -vx "$GITHUB_REF_NAME" | head -n 1)
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$TITLE" --generate-notes \
+            ${previous:+--notes-start-tag "$previous"}

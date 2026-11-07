@@ -5,12 +5,43 @@
   "description": "MCP server for Jira and Confluence Server/Data Center in one process",
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
+    "@rsbuild/core": "^2.3.1",
     "conf-mcp": "workspace:*",
-    "esbuild": "^0.28.2",
     "g-jira-mcp": "workspace:*"
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "jira",
+    "jira-server",
+    "jira-data-center",
+    "atlassian",
+    "rest-api",
+    "claude",
+    "claude-code",
+    "codex",
+    "gemini",
+    "cursor",
+    "windsurf",
+    "llm",
+    "ai",
+    "ai-tools",
+    "agent",
+    "issue-tracking",
+    "project-management",
+    "jql",
+    "jira-api",
+    "server",
+    "confluence",
+    "confluence-server",
+    "confluence-data-center",
+    "wiki",
+    "knowledge-base",
+    "cql",
+    "confluence-api"
   ],
   "license": "MIT",
   "main": "dist/index.js",
@@ -24,7 +55,7 @@
     "url": "git+https://github.com/pnam16/atlassian-mcp.git"
   },
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "rsbuild build",
     "prepare": "pnpm build",
     "release": "release-it",
     "start": "node src/index.js",

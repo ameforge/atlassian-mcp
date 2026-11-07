@@ -10,7 +10,7 @@
     "tagName": "atlassian-v${version}"
   },
   "github": {
-    "release": true,
+    "release": false,
     "releaseName": "atlassian-mcp v${version}"
   },
   "hooks": {
