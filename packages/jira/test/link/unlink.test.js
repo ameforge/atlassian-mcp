@@ -46,5 +46,8 @@ test("unlink_issues lists the existing links when none match", async () => {
   const {deleted, isError, text} = await unlink({link_type: "Blocks"});
   assert.equal(isError, true);
   assert.deepEqual(deleted, []);
-  assert.match(text, /Existing: PROJ-1 has bug PROJ-2; PROJ-1 relates to PROJ-2/);
+  assert.match(
+    text,
+    /Existing: PROJ-1 has bug PROJ-2; PROJ-1 relates to PROJ-2/,
+  );
 });

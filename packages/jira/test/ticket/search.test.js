@@ -39,7 +39,10 @@ test("search_tickets keeps a column when any single row fills it", async () => {
 
   assert.match(text, /^KEY \| Summary \| Status \| Assignee \| Due Date$/m);
   assert.match(text, /^PROJ-1 \| S-PROJ-1 \| Open \| Unassigned \| -$/m);
-  assert.match(text, /^PROJ-2 \| S-PROJ-2 \| Open \| Unassigned \| 2026-02-01$/m);
+  assert.match(
+    text,
+    /^PROJ-2 \| S-PROJ-2 \| Open \| Unassigned \| 2026-02-01$/m,
+  );
 });
 
 test("search_tickets states a column shared by every row once, not per row", async () => {
