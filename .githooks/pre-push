@@ -1,0 +1,9 @@
+#!/bin/sh
+# Stands in for CI: check and test before pushing to origin.
+# Mirror pushes from scripts/mirror.js name a URL, not origin, so they skip.
+[ "$1" = origin ] || exit 0
+# release-it pushes right after its before:init already ran check and test.
+case "$(git log -1 --format=%s)" in
+  "chore("*"): release v"*) exit 0 ;;
+esac
+pnpm -w run check && pnpm test

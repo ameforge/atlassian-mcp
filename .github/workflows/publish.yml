@@ -1,8 +1,11 @@
 name: Publish
 
+# One run per release command: every root release script ends with an
+# atlassian release, so its tag is pushed last and this run publishes every
+# package whose version is not on npm yet.
 on:
   push:
-    tags: ["jira-v*", "conf-v*", "atlassian-v*"]
+    tags: ["atlassian-v*"]
 
 permissions:
   contents: write # gh release create
@@ -14,57 +17,56 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0 # release notes need the previous tag of this package
+          fetch-depth: 0 # release notes need the previous tag of each package
       - uses: pnpm/action-setup@v6
         with:
           version: 11
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # Trusted publishing needs npm 11.5.1+, bundled since Node 24.5.0.
+          node-version: 24
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      # Trusted publishing needs npm 11.5.1+; Node 22 ships npm 10.
-      - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
 
-      - name: Resolve package from tag
-        id: pkg
-        run: |
-          prefix="${GITHUB_REF_NAME%%v*}v"
-          case "$prefix" in
-            jira-v) dir=jira name=jira-mcp ;;
-            conf-v) dir=confluence name=conf-mcp ;;
-            atlassian-v) dir=atlassian name=atlassian-mcp ;;
-            *) echo "Unknown tag $GITHUB_REF_NAME"; exit 1 ;;
-          esac
-          version="${GITHUB_REF_NAME#"$prefix"}"
-          actual=$(node -p "require('./packages/$dir/package.json').version")
-          if [ "$actual" != "$version" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match packages/$dir version $actual"; exit 1
-          fi
-          {
-            echo "dir=packages/$dir"
-            echo "prefix=$prefix"
-            echo "title=$name v$version"
-          } >> "$GITHUB_OUTPUT"
-
-      - run: pnpm -w run check
-      - run: pnpm test
-      - run: pnpm build
-
-      # pnpm pack turns workspace:* into real versions; npm publish handles OIDC.
-      - name: Publish to npm
-        run: |
-          pnpm -C "${{ steps.pkg.outputs.dir }}" pack --pack-destination "$RUNNER_TEMP/pkg"
-          npm publish "$RUNNER_TEMP"/pkg/*.tgz --access public
-
-      - name: Create GitHub release
+      # check, test and build already ran in release-it's before:init; pnpm pack
+      # runs each package's prepare (pnpm build) and turns workspace:* into real
+      # versions; npm publish handles OIDC.
+      - name: Publish new versions and create GitHub releases
         env:
           GH_TOKEN: ${{ github.token }}
-          PREFIX: ${{ steps.pkg.outputs.prefix }}
-          TITLE: ${{ steps.pkg.outputs.title }}
         run: |
-          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && exit 0
-          previous=$(git tag --list "${PREFIX}*" --sort=-v:refname | grep -vx "$GITHUB_REF_NAME" | head -n 1)
-          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$TITLE" --generate-notes \
-            ${previous:+--notes-start-tag "$previous"}
+          for entry in jira:jira-v:jira-mcp confluence:conf-v:conf-mcp atlassian:atlassian-v:atlassian-mcp; do
+            IFS=: read -r dir prefix title <<< "$entry"
+            name=$(node -p "require('./packages/$dir/package.json').name")
+            version=$(node -p "require('./packages/$dir/package.json').version")
+            tag="$prefix$version"
+            if npm view "$name@$version" version > /dev/null 2>&1; then
+              echo "$name@$version is already on npm, skipping"
+              continue
+            fi
+            if ! git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
+              echo "::error::$name@$version is not on npm and tag $tag does not exist"; exit 1
+            fi
+            # HEAD must carry the same package code as its release tag.
+            if ! git diff --quiet "$tag" HEAD -- "packages/$dir"; then
+              echo "::error::packages/$dir changed after $tag; release it again"; exit 1
+            fi
+
+            pnpm -C "packages/$dir" pack --pack-destination "$RUNNER_TEMP/$dir"
+            npm publish "$RUNNER_TEMP/$dir"/*.tgz --access public
+
+            if ! gh release view "$tag" > /dev/null 2>&1; then
+              previous=$(git tag --list "$prefix*" --sort=-v:refname | sed -n "/^$tag\$/{n;p;q}")
+              if [ -z "$previous" ]; then
+                gh release create "$tag" --verify-tag --title "$title v$version" --generate-notes
+                continue
+              fi
+              # No PRs in this repo, so --generate-notes would list nothing: use this package's commits.
+              notes=$(git log --format='- %s (%h)' --invert-grep --grep='^chore(.*): release v' \
+                "$previous..$tag" -- "packages/$dir")
+              notes="${notes:-No code changes in packages/$dir.}"
+              notes="$notes"$'\n\n'"Full Changelog: https://github.com/$GITHUB_REPOSITORY/compare/$previous...$tag"
+              gh release create "$tag" --verify-tag --title "$title v$version" --notes "$notes"
+            fi
+          done

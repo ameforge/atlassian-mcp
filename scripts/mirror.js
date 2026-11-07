@@ -19,8 +19,7 @@ if (!dir || !version) {
   process.exit(1);
 }
 
-// shortcut: SSH host alias from the maintainer's ~/.ssh/config, change it when releasing from another machine
-const url = `git@github-pnam16:pnam16/${pkg}.git`;
+const url = `git@github.com:pnam16/${pkg}.git`;
 const git = (...args) => execFileSync("git", args, {encoding: "utf8"}).trim();
 
 git("fetch", url, "main");
