@@ -114,7 +114,7 @@ Official setup guides:
 - 401/403: recheck `CONFLUENCE_USERNAME`/`CONFLUENCE_PASSWORD` and whether the account can access the space.
 - Connection/timeout: verify `CONFLUENCE_HOST` format (starts with `https://`, no trailing `/`), and whether VPN/internal network is required.
 - Error logs: every failed tool call is written to stderr with a timestamp and the tool name, and the startup line shows the server version. On Windows, Claude Code keeps this in `%LOCALAPPDATA%\claude-cli-nodejs\Cache\<project>\mcp-logs-<server name>\`, where `<server name>` is the name you gave the server in your MCP config (for example `conf-mcp`).
-- Reporting a bug: open an issue at <https://github.com/pnam16/confluence-mcp/issues> with the server version, the tool you called and the matching log lines. Logs can contain page content and internal URLs, so remove anything sensitive before you post. Nothing is sent anywhere automatically.
+- Reporting a bug: open an issue at <https://github.com/pnam16/atlassian-mcp/issues> with the server version, the tool you called and the matching log lines. Logs can contain page content and internal URLs, so remove anything sensitive before you post. Nothing is sent anywhere automatically.
 
 ## Development
 
