@@ -36,7 +36,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for entry in jira:jira-v:jira-mcp confluence:conf-v:conf-mcp atlassian:atlassian-v:atlassian-mcp; do
+          for entry in jira:jira-v:jira-mcp confluence:conf-v:conf-mcp bitbucket:bitbucket-v:bitbucket-mcp atlassian:atlassian-v:atlassian-mcp; do
             IFS=: read -r dir prefix title <<< "$entry"
             name=$(node -p "require('./packages/$dir/package.json').name")
             version=$(node -p "require('./packages/$dir/package.json').version")

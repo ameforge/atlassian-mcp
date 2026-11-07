@@ -7,6 +7,7 @@ import {execFileSync} from "node:child_process";
 
 // mirror repo name -> folder under packages/
 const MIRRORS = new Map([
+  ["bitbucket-mcp", "bitbucket"],
   ["confluence-mcp", "confluence"],
   ["jira-mcp", "jira"],
 ]);
@@ -14,7 +15,7 @@ const [pkg, version] = process.argv.slice(2);
 const dir = MIRRORS.get(pkg);
 if (!dir || !version) {
   console.error(
-    "usage: node scripts/mirror.js <jira-mcp|confluence-mcp> <version>",
+    "usage: node scripts/mirror.js <jira-mcp|confluence-mcp|bitbucket-mcp> <version>",
   );
   process.exit(1);
 }
@@ -22,14 +23,18 @@ if (!dir || !version) {
 const url = `git@github.com:pnam16/${pkg}.git`;
 const git = (...args) => execFileSync("git", args, {encoding: "utf8"}).trim();
 
-git("fetch", url, "main");
-const parent = git("rev-parse", "FETCH_HEAD");
+// A newly created mirror has no main yet; its first release becomes a root commit.
+const hasMain = git("ls-remote", "--heads", url, "main") !== "";
+let parent = [];
+if (hasMain) {
+  git("fetch", url, "main");
+  parent = ["-p", git("rev-parse", "FETCH_HEAD")];
+}
 const tree = git("rev-parse", `HEAD:packages/${dir}`);
 const commit = git(
   "commit-tree",
   tree,
-  "-p",
-  parent,
+  ...parent,
   "-m",
   `chore: release v${version}`,
 );
