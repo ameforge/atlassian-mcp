@@ -132,7 +132,7 @@ Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
 
 If this project helps you, consider buying me a coffee:
 
-<img src="https://raw.githubusercontent.com/pnam16/confluence-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
 
 ---
 

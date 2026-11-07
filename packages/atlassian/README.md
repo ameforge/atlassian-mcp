@@ -106,3 +106,15 @@ pnpm release           # release-it: runs check, test and build, then bumps vers
 ```
 
 A release of g-jira-mcp or conf-mcp reaches this package only after it is released too.
+
+## Support
+
+Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
+
+If this project helps you, consider buying me a coffee:
+
+<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+
+---
+
+Created by [PNam](mailto:pnamhn16@gmail.com)

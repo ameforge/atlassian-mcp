@@ -25,3 +25,15 @@ pnpm build             # every package, each to its own dist/index.js
 ```
 
 Releases run per package; see [docs/RELEASE.md](docs/RELEASE.md).
+
+## Support
+
+Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
+
+If this project helps you, consider buying me a coffee:
+
+<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+
+---
+
+Created by [PNam](mailto:pnamhn16@gmail.com)
