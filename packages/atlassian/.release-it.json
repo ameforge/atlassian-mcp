@@ -24,7 +24,7 @@
   "plugins": {
     "@release-it/conventional-changelog": {
       "commitsOpts": {
-        "path": [".", "../jira", "../confluence"]
+        "path": [".", "../jira", "../confluence", "../bitbucket"]
       },
       "preset": {
         "name": "conventionalcommits"

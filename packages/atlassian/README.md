@@ -85,9 +85,11 @@ Official setup guides:
 | `CONFLUENCE_PASSWORD`   | yes*     | Confluence password                                             |
 | `CONFLUENCE_TOKEN`      | no       | Personal Access Token; when set, replaces username/password (*) |
 
+Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 16 tools of [@pnam16/bitbucket-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
+
 ## Tools
 
-All 36 tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
+All 36 Jira and Confluence tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
 
 | In g-jira-mcp / conf-mcp | In @pnam16/atlassian-mcp                                     |
 | ------------------------ | ------------------------------------------------------------ |
@@ -105,7 +107,7 @@ pnpm test
 pnpm release           # release-it: runs check, test and build, then bumps version, commits, tags, pushes (commit your changes first; pnpm publish is a separate step)
 ```
 
-A release of g-jira-mcp or conf-mcp reaches this package only after it is released too.
+A release of g-jira-mcp, conf-mcp or @pnam16/bitbucket-mcp reaches this package only after it is released too.
 
 ## Support
 

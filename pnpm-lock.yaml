@@ -32,6 +32,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.32.2
         version: 1.32.2(zod@3.25.76)
+      '@pnam16/bitbucket-mcp':
+        specifier: workspace:*
+        version: link:../bitbucket
       '@rsbuild/core':
         specifier: ^2.3.1
         version: 2.3.1
@@ -41,6 +44,21 @@ importers:
       g-jira-mcp:
         specifier: workspace:*
         version: link:../jira
+
+  packages/bitbucket:
+    devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.32.2
+        version: 1.32.2(zod@3.25.76)
+      '@rsbuild/core':
+        specifier: ^2.3.1
+        version: 2.3.1
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   packages/confluence:
     devDependencies:
