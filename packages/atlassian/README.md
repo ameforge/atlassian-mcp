@@ -1,6 +1,6 @@
 # Atlassian self-hosted mcp
 
-MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira-mcp) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence-mcp), so an AI assistant needs one server entry instead of two.
+MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence), so an AI assistant needs one server entry instead of two.
 
 ## Requirements
 
@@ -14,27 +14,27 @@ Use Claude Code CLI. Run the command in a regular terminal, not inside a Claude 
 bash / zsh (macOS, Linux, Git Bash or WSL on Windows):
 
 ```bash
-claude mcp add atlassian-self-mcp \
+claude mcp add atlassian-mcp \
   -e JIRA_HOST="https://jira.company.com" \
   -e JIRA_USERNAME="your_username" \
   -e JIRA_PASSWORD="your_password" \
   -e CONFLUENCE_HOST="https://conf.company.com" \
   -e CONFLUENCE_USERNAME="your_username" \
   -e CONFLUENCE_PASSWORD="your_password" \
-  -- npx -y atlassian-self-mcp@latest
+  -- npx -y @pnam16/atlassian-mcp@latest
 ```
 
 PowerShell (Windows):
 
 ```powershell
-claude mcp add atlassian-self-mcp `
+claude mcp add atlassian-mcp `
   -e JIRA_HOST="https://jira.company.com" `
   -e JIRA_USERNAME="your_username" `
   -e JIRA_PASSWORD="your_password" `
   -e CONFLUENCE_HOST="https://conf.company.com" `
   -e CONFLUENCE_USERNAME="your_username" `
   -e CONFLUENCE_PASSWORD="your_password" `
-  -- npx -y atlassian-self-mcp@latest
+  -- npx -y @pnam16/atlassian-mcp@latest
 ```
 
 Command Prompt (cmd.exe): put the whole command on one line, or end each line with `^` instead of `\`.
@@ -44,9 +44,9 @@ Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "atlassian-self-mcp": {
+    "atlassian-mcp": {
       "command": "npx",
-      "args": ["-y", "atlassian-self-mcp@latest"],
+      "args": ["-y", "@pnam16/atlassian-mcp@latest"],
       "env": {
         "JIRA_HOST": "https://jira.company.com",
         "JIRA_USERNAME": "your_username",
@@ -80,9 +80,9 @@ Restart Claude Code/Desktop after editing the config.
 
 ## Tools
 
-All 36 tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira-mcp#tools) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence-mcp#tools) READMEs, except the two names both servers use, which carry a product prefix here:
+All 36 tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
 
-| In g-jira-mcp / conf-mcp | In atlassian-self-mcp                                        |
+| In g-jira-mcp / conf-mcp | In @pnam16/atlassian-mcp                                     |
 | ------------------------ | ------------------------------------------------------------ |
 | `add_comment`            | `jira_add_comment`, `confluence_add_comment`                 |
 | `download_attachment`    | `jira_download_attachment`, `confluence_download_attachment` |

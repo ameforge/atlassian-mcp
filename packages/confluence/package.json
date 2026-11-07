@@ -43,7 +43,7 @@
   "main": "dist/index.js",
   "name": "conf-mcp",
   "repository": {
-    "directory": "packages/confluence-mcp",
+    "directory": "packages/confluence",
     "type": "git",
     "url": "git+https://github.com/pnam16/atlassian-mcp.git"
   },

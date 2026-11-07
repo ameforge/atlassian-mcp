@@ -2,11 +2,11 @@
 
 Monorepo có 3 package, mỗi package release riêng từ thư mục của nó:
 
-| Thư mục                       | Tên npm              | Tag                          | Mirror                  |
-| ----------------------------- | -------------------- | ---------------------------- | ----------------------- |
-| `packages/jira-mcp`           | `g-jira-mcp`         | `jira-v${version}`           | `pnam16/jira-mcp`       |
-| `packages/confluence-mcp`     | `conf-mcp`           | `conf-v${version}`           | `pnam16/confluence-mcp` |
-| `packages/atlassian-self-mcp` | `atlassian-self-mcp` | `atlassian-self-v${version}` | không có                |
+| Thư mục               | Tên npm                 | Tag                     | Mirror                  |
+| --------------------- | ----------------------- | ----------------------- | ----------------------- |
+| `packages/jira`       | `g-jira-mcp`            | `jira-v${version}`      | `pnam16/jira-mcp`       |
+| `packages/confluence` | `conf-mcp`              | `conf-v${version}`      | `pnam16/confluence-mcp` |
+| `packages/atlassian`  | `@pnam16/atlassian-mcp` | `atlassian-v${version}` | không có                |
 
 Tên `jira-mcp` trên npm đã bị tài khoản khác chiếm, nên package Jira publish với tên `g-jira-mcp`.
 
@@ -24,7 +24,7 @@ Tên `jira-mcp` trên npm đã bị tài khoản khác chiếm, nên package Jir
 2. Chạy release trong thư mục package:
 
    ```bash
-   cd packages/jira-mcp
+   cd packages/jira
    pnpm release
    ```
 
@@ -50,7 +50,7 @@ Tên `jira-mcp` trên npm đã bị tài khoản khác chiếm, nên package Jir
 
    Field `files` trong `package.json` chỉ đóng gói `dist/`.
 
-5. Release lại `atlassian-self-mcp`. Package này đóng gói sẵn code của `jira-mcp` và `confluence-mcp` vào `dist/index.js`, nên bản mới của hai package kia chỉ đến tay người dùng `atlassian-self-mcp` sau khi nó được release và publish lại (bước 2 và 4 trong `packages/atlassian-self-mcp`). Package này phải publish bằng `pnpm publish`: nó khai báo `workspace:*`, pnpm đổi thành số version khi publish, còn `npm publish` thì giữ nguyên.
+5. Release lại `@pnam16/atlassian-mcp`. Package này đóng gói sẵn code của `jira-mcp` và `confluence-mcp` vào `dist/index.js`, nên bản mới của hai package kia chỉ đến tay người dùng `@pnam16/atlassian-mcp` sau khi nó được release và publish lại (bước 2 và 4 trong `packages/atlassian`). Package này phải publish bằng `pnpm publish`: nó khai báo `workspace:*`, pnpm đổi thành số version khi publish, còn `npm publish` thì giữ nguyên.
 
 ## Kiểm tra nhanh sau build
 

@@ -4,7 +4,7 @@ import pkg from "../package.json" with {type: "json"};
 import {registerTools} from "./register.js";
 
 const server = new McpServer({
-  name: "atlassian-self-mcp",
+  name: "atlassian-mcp",
   version: pkg.version,
 });
 

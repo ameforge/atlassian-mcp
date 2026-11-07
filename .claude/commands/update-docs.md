@@ -1,6 +1,6 @@
 ---
 description: Sync README.md and docs/*.md with source for one package or both (runs on Haiku via the update-docs agent)
-argument-hint: "[jira-mcp|confluence-mcp]"
+argument-hint: "[jira|confluence]"
 allowed-tools: Agent
 ---
 

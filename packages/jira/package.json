@@ -42,7 +42,7 @@
   "main": "dist/index.js",
   "name": "g-jira-mcp",
   "repository": {
-    "directory": "packages/jira-mcp",
+    "directory": "packages/jira",
     "type": "git",
     "url": "git+https://github.com/pnam16/atlassian-mcp.git"
   },

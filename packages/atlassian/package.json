@@ -1,6 +1,6 @@
 {
   "bin": {
-    "atlassian-self-mcp": "dist/index.js"
+    "atlassian-mcp": "dist/index.js"
   },
   "description": "MCP server for Jira and Confluence Server/Data Center in one process",
   "devDependencies": {
@@ -14,9 +14,12 @@
   ],
   "license": "MIT",
   "main": "dist/index.js",
-  "name": "atlassian-self-mcp",
+  "name": "@pnam16/atlassian-mcp",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
-    "directory": "packages/atlassian-self-mcp",
+    "directory": "packages/atlassian",
     "type": "git",
     "url": "git+https://github.com/pnam16/atlassian-mcp.git"
   },

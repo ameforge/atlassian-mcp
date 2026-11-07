@@ -12,9 +12,9 @@
 
 ## Gotchas
 
-- npm names differ from folder names: `packages/jira-mcp` publishes as `g-jira-mcp`, `packages/confluence-mcp` as `conf-mcp`, `packages/atlassian-self-mcp` as `atlassian-self-mcp`. Install commands in docs use the npm name.
-- `atlassian-self-mcp` bundles the other two packages through `src/register.js` in each. A jira or confluence release reaches its users only after `atlassian-self-mcp` is released too. Publish it with `pnpm publish`: its `workspace:*` versions stay literal under `npm publish`.
-- The same tool name in both packages (today `add_comment`, `download_attachment`) must get a prefix in `packages/atlassian-self-mcp/src/register.js`; otherwise its server throws "already registered" at startup, which its test catches.
+- npm names differ from folder names: `packages/jira` publishes as `g-jira-mcp`, `packages/confluence` as `conf-mcp`, `packages/atlassian` as `@pnam16/atlassian-mcp`. Install commands in docs use the npm name.
+- `@pnam16/atlassian-mcp` bundles the other two packages through `src/register.js` in each. A jira or confluence release reaches its users only after `@pnam16/atlassian-mcp` is released too. Publish it with `pnpm publish`: its `workspace:*` versions stay literal under `npm publish`.
+- The same tool name in both packages (today `add_comment`, `download_attachment`) must get a prefix in `packages/atlassian/src/register.js`; otherwise its server throws "already registered" at startup, which its test catches.
 - `pnpm release` (run inside the package) tags `jira-v<version>` or `conf-v<version>` and runs the mirror, but `.release-it.json` sets `npm.publish: false`. `npm publish` is a separate manual step afterwards; skipping it leaves npm users on the old version.
 - The packages fake Atlassian differently. Jira tools receive `jiraRequest` as an argument (`registerX(server, jiraRequest)`), and tests pass a fake from `test/helpers/fake-server.js`. Confluence tools import `confluenceRequest` directly, and tests stub `globalThis.fetch`. Follow the package's own style rather than adding a seam.
 - `fakeServer` calls the handler directly and skips the zod `inputSchema`. A guard that a test must cover belongs in the handler; a test relying on schema validation passes for the wrong reason.

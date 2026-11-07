@@ -1,17 +1,17 @@
 {
   "git": {
     "commit": true,
-    "commitMessage": "chore(atlassian-self-mcp): release v${version}",
+    "commitMessage": "chore(atlassian-mcp): release v${version}",
     "push": true,
     "pushTags": true,
     "requireCleanWorkingDir": true,
     "tag": true,
-    "tagMatch": "atlassian-self-v*",
-    "tagName": "atlassian-self-v${version}"
+    "tagMatch": "atlassian-v*",
+    "tagName": "atlassian-v${version}"
   },
   "github": {
     "release": true,
-    "releaseName": "atlassian-self-mcp v${version}"
+    "releaseName": "atlassian-mcp v${version}"
   },
   "hooks": {
     "before:init": ["pnpm -w run check", "pnpm test", "pnpm build"]

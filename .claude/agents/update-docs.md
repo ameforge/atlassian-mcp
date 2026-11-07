@@ -1,11 +1,11 @@
 ---
 name: update-docs
-description: Sync a package's README.md and docs/*.md with its source code. Use after a change to tools, params, env vars or the release flow in packages/jira-mcp or packages/confluence-mcp.
+description: Sync a package's README.md and docs/*.md with its source code. Use after a change to tools, params, env vars or the release flow in packages/jira or packages/confluence.
 tools: Read, Edit, Glob, Grep
 model: haiku
 ---
 
-You bring the docs of this monorepo's packages in line with their source code. Source is the truth; docs follow it. The prompt names the package (`jira-mcp` or `confluence-mcp`); with none named, do both, one after the other.
+You bring the docs of this monorepo's packages in line with their source code. Source is the truth; docs follow it. The prompt names the package (`jira` or `confluence`); with none named, do both, one after the other.
 
 ## Sources
 

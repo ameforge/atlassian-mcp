@@ -1,13 +1,18 @@
-// Publishes packages/<pkg> at HEAD to its mirror repo as one commit on top of
+// Publishes packages/<dir> at HEAD to its mirror repo <pkg> as one commit on top of
 // the mirror's main, tagged v<version>. The mirrors exist only to keep their
 // GitHub stars; all development happens in this monorepo.
 // commit-tree instead of `git subtree split`: split loses history across the
 // conf-mcp -> confluence-mcp folder rename.
 import {execFileSync} from "node:child_process";
 
-const MIRRORS = new Set(["confluence-mcp", "jira-mcp"]);
+// mirror repo name -> folder under packages/
+const MIRRORS = new Map([
+  ["confluence-mcp", "confluence"],
+  ["jira-mcp", "jira"],
+]);
 const [pkg, version] = process.argv.slice(2);
-if (!MIRRORS.has(pkg) || !version) {
+const dir = MIRRORS.get(pkg);
+if (!dir || !version) {
   console.error(
     "usage: node scripts/mirror.js <jira-mcp|confluence-mcp> <version>",
   );
@@ -20,7 +25,7 @@ const git = (...args) => execFileSync("git", args, {encoding: "utf8"}).trim();
 
 git("fetch", url, "main");
 const parent = git("rev-parse", "FETCH_HEAD");
-const tree = git("rev-parse", `HEAD:packages/${pkg}`);
+const tree = git("rev-parse", `HEAD:packages/${dir}`);
 const commit = git(
   "commit-tree",
   tree,
@@ -37,4 +42,4 @@ git(
   `${commit}:refs/heads/main`,
   `${commit}:refs/tags/v${version}`,
 );
-console.log(`Mirrored packages/${pkg} to ${url} as v${version}`);
+console.log(`Mirrored packages/${dir} to ${url} as v${version}`);
