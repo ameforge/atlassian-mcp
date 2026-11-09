@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
 import {registerUpdateTicket} from "../../src/tools/ticket/update.js";
-import {fakeServer} from "../helpers/fake-server.js";
+import {fakeForms, fakeServer} from "../helpers/fake-server.js";
 
 test("update_ticket rejects an empty update", async () => {
   const server = fakeServer();
@@ -55,23 +55,13 @@ test("update_ticket reports Jira's silent rejection of a Sub-task parent change"
   assert.match(result.content[0].text, /pass issue_type with a sub-task type/);
 });
 
-// Scripts Jira's Move > Change Parent form: the wizard start sets the session
-// cookie, the parent form carries the token, and the submit answers `submit`.
-const stubMoveForm = ({submit = 302, submitHtml = ""} = {}) => {
-  const sent = [];
-  globalThis.fetch = async (url, init = {}) => {
-    sent.push({body: init.body, cookie: init.headers?.Cookie, url});
-    const html = url.includes("MoveSubTaskParent!default")
-      ? '<input type="hidden" id="atl_token" name="atl_token"\n  value="TOK1" />'
-      : submitHtml;
-    return {
-      headers: {getSetCookie: () => ["JSESSIONID=s1; Path=/"]},
-      status: url.endsWith("MoveSubTaskParent.jspa") ? submit : 200,
-      text: async () => html,
-    };
-  };
-  return sent;
-};
+// Scripts Jira's Move > Change Parent form: the parent form carries the
+// token, and the submit answers with `submit`.
+const moveForm = (submit = {done: true, redirected: true, status: 302}) =>
+  fakeForms({
+    "MoveSubTaskParent!default": {token: "TOK1"},
+    "MoveSubTaskParent.jspa": submit,
+  });
 
 // The sub-task reports PROJ-5 as its parent on the first read, then `after`.
 // PUT bodies land in `puts`.
@@ -89,33 +79,35 @@ const reparentJira = (after, puts = []) => {
 };
 
 test("update_ticket re-parents an existing sub-task through Jira's Change Parent form", async () => {
-  const sent = stubMoveForm();
+  const {forms, sent} = moveForm();
   const server = fakeServer();
-  registerUpdateTicket(server, reparentJira("PROJ-9"));
+  registerUpdateTicket(server, reparentJira("PROJ-9"), forms);
 
   const result = await server.tools.get("update_ticket")({
     parent_key: "PROJ-9",
     ticket_id: "PROJ-1",
   });
   assert.equal(result.content[0].text, "PROJ-1 updated successfully");
-  const submit = sent.at(-1);
-  assert.match(submit.url, /MoveSubTaskParent\.jspa$/);
-  assert.equal(submit.cookie, "JSESSIONID=s1");
-  assert.equal(sent[1].cookie, "JSESSIONID=s1");
-  const fields = new URLSearchParams(submit.body);
+  // One session, Move wizard first: the parent form needs both.
+  assert.deepEqual(
+    sent.map((s) => [s.session, s.method, s.url.replace(/^.*\/secure\//, "")]),
+    [
+      [1, "open", "MoveSubTaskChooseOperation!default.jspa?id=1001"],
+      [1, "open", "MoveSubTaskParent!default.jspa?id=1001"],
+      [1, "submit", "MoveSubTaskParent.jspa"],
+    ],
+  );
+  const {fields} = sent[2];
   assert.equal(fields.get("id"), "1001");
   assert.equal(fields.get("parentIssue"), "PROJ-9");
   assert.equal(fields.get("atl_token"), "TOK1");
 });
 
 test("update_ticket reports why Jira rejected a sub-task's new parent", async () => {
-  stubMoveForm({
-    submit: 200,
-    submitHtml: '<div class="error">Parent issue PROJ-9 is a sub-task</div>',
-  });
+  const {forms} = moveForm({errors: "Parent issue PROJ-9 is a sub-task"});
   const server = fakeServer();
   const puts = [];
-  registerUpdateTicket(server, reparentJira("PROJ-5", puts));
+  registerUpdateTicket(server, reparentJira("PROJ-5", puts), forms);
 
   const result = await server.tools.get("update_ticket")({
     parent_key: "PROJ-9",

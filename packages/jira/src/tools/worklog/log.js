@@ -1,5 +1,6 @@
 import {z} from "zod";
 import {defineTool} from "../../define-tool.js";
+import {formSession} from "../../web-form.js";
 import {
   ACTIVITIES,
   canonicalNames,
@@ -7,7 +8,7 @@ import {
   WORK_TYPES,
 } from "./worklog-pro.js";
 
-export const registerLogWork = (server, jiraRequest) => {
+export const registerLogWork = (server, jiraRequest, forms = formSession) => {
   defineTool(
     server,
     "log_work",
@@ -45,7 +46,7 @@ export const registerLogWork = (server, jiraRequest) => {
       {ticket_id, time_spent, comment, started, work_type, activity},
       jira,
     ) => {
-      const {id} = await logWorkPro(jira, ticket_id, time_spent, {
+      const {id} = await logWorkPro(jira, forms, ticket_id, time_spent, {
         activity,
         comment,
         started,
