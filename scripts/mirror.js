@@ -20,7 +20,7 @@ if (!dir || !version) {
   process.exit(1);
 }
 
-const url = `git@github.com:pnam16/${pkg}.git`;
+const url = `git@github.com:ameforge/${pkg}.git`;
 const git = (...args) => execFileSync("git", args, {encoding: "utf8"}).trim();
 
 // A newly created mirror has no main yet; its first release becomes a root commit.
@@ -30,7 +30,15 @@ if (hasMain) {
   git("fetch", url, "main");
   parent = ["-p", git("rev-parse", "FETCH_HEAD")];
 }
-const tree = git("rev-parse", `HEAD:packages/${dir}`);
+// The only LICENSE lives at the repo root; add it to the mirror's tree.
+const entries = git("ls-tree", `HEAD:packages/${dir}`)
+  .split("\n")
+  .filter((line) => !line.endsWith("\tLICENSE"));
+entries.push(`100644 blob ${git("rev-parse", "HEAD:LICENSE")}\tLICENSE`);
+const tree = execFileSync("git", ["mktree"], {
+  encoding: "utf8",
+  input: `${entries.join("\n")}\n`,
+}).trim();
 const commit = git(
   "commit-tree",
   tree,

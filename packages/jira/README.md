@@ -142,7 +142,7 @@ curl -u user:pass https://jira.company.com/rest/api/2/field | jq '.[] | select(.
 - Connection/timeout: verify `JIRA_HOST` format (starts with `https://`, no trailing `/`), and whether VPN/internal network is required.
 - Start date not saving: confirm `JIRA_START_DATE_FIELD` matches your instance (see the discovery command above).
 - Error logs: every failed tool call is written to stderr with a timestamp and the tool name, and the startup line shows the server version. On Windows, Claude Code keeps this in `%LOCALAPPDATA%\claude-cli-nodejs\Cache\<project>\mcp-logs-<server name>\` (for example `mcp-logs-g-jira-mcp`).
-- Reporting a bug: open an issue at <https://github.com/pnam16/atlassian-mcp/issues> with the server version, the tool you called and the matching log lines. Logs can contain ticket content and internal URLs, so remove anything sensitive before you post. Nothing is sent anywhere automatically.
+- Reporting a bug: open an issue at <https://github.com/ameforge/atlassian-mcp/issues> with the server version, the tool you called and the matching log lines. Logs can contain ticket content and internal URLs, so remove anything sensitive before you post. Nothing is sent anywhere automatically.
 
 ## Development
 
@@ -160,7 +160,7 @@ Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
 
 If this project helps you, consider buying me a coffee:
 
-<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+<img src="https://raw.githubusercontent.com/ameforge/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
 
 ---
 

@@ -4,14 +4,14 @@ MCP servers for self-hosted Atlassian products (Jira and Confluence Server/Data 
 
 ## Packages
 
-| Package                                    | npm                     | What it serves                                                                        |
-| ------------------------------------------ | ----------------------- | ------------------------------------------------------------------------------------- |
-| [packages/jira](packages/jira)             | `g-jira-mcp`            | Jira Server/Data Center (REST API v2)                                                 |
-| [packages/confluence](packages/confluence) | `conf-mcp`              | Confluence Server/Data Center (REST API)                                              |
-| [packages/bitbucket](packages/bitbucket)   | `@pnam16/bitbucket-mcp` | Bitbucket Cloud (REST API 2.0)                                                        |
-| [packages/atlassian](packages/atlassian)   | `@pnam16/atlassian-mcp` | Jira and Confluence from one server, plus Bitbucket when `BITBUCKET_API_TOKEN` is set |
+| Package                                    | npm                       | What it serves                                                                        |
+| ------------------------------------------ | ------------------------- | ------------------------------------------------------------------------------------- |
+| [packages/jira](packages/jira)             | `g-jira-mcp`              | Jira Server/Data Center (REST API v2)                                                 |
+| [packages/confluence](packages/confluence) | `conf-mcp`                | Confluence Server/Data Center (REST API)                                              |
+| [packages/bitbucket](packages/bitbucket)   | `@ameforge/bitbucket-mcp` | Bitbucket Cloud (REST API 2.0)                                                        |
+| [packages/atlassian](packages/atlassian)   | `@ameforge/atlassian-mcp` | Jira and Confluence from one server, plus Bitbucket when `BITBUCKET_API_TOKEN` is set |
 
-Each package README has the install command, environment variables and tool list. Use `@pnam16/atlassian-mcp` when you work with both Jira and Confluence, so your assistant needs one server entry instead of two.
+Each package README has the install command, environment variables and tool list. Use `@ameforge/atlassian-mcp` when you work with both Jira and Confluence, so your assistant needs one server entry instead of two.
 
 Official setup guides:
 
@@ -38,7 +38,7 @@ Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
 
 If this project helps you, consider buying me a coffee:
 
-<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+<img src="https://raw.githubusercontent.com/ameforge/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
 
 ---
 

@@ -1,6 +1,6 @@
 # Atlassian self-hosted mcp
 
-MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence), so an AI assistant needs one server entry instead of two.
+MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence), so an AI assistant needs one server entry instead of two.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ claude mcp add atlassian-mcp \
   -e CONFLUENCE_HOST="https://conf.company.com" \
   -e CONFLUENCE_USERNAME="your_username" \
   -e CONFLUENCE_PASSWORD="your_password" \
-  -- npx -y @pnam16/atlassian-mcp@latest
+  -- npx -y @ameforge/atlassian-mcp@latest
 ```
 
 PowerShell (Windows):
@@ -34,7 +34,7 @@ claude mcp add atlassian-mcp `
   -e CONFLUENCE_HOST="https://conf.company.com" `
   -e CONFLUENCE_USERNAME="your_username" `
   -e CONFLUENCE_PASSWORD="your_password" `
-  -- npx -y @pnam16/atlassian-mcp@latest
+  -- npx -y @ameforge/atlassian-mcp@latest
 ```
 
 Command Prompt (cmd.exe): put the whole command on one line, or end each line with `^` instead of `\`.
@@ -46,7 +46,7 @@ Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
   "mcpServers": {
     "atlassian-mcp": {
       "command": "npx",
-      "args": ["-y", "@pnam16/atlassian-mcp@latest"],
+      "args": ["-y", "@ameforge/atlassian-mcp@latest"],
       "env": {
         "JIRA_HOST": "https://jira.company.com",
         "JIRA_USERNAME": "your_username",
@@ -85,13 +85,13 @@ Official setup guides:
 | `CONFLUENCE_PASSWORD`   | yes*     | Confluence password                                             |
 | `CONFLUENCE_TOKEN`      | no       | Personal Access Token; when set, replaces username/password (*) |
 
-Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 16 tools of [@pnam16/bitbucket-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
+Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 16 tools of [@ameforge/bitbucket-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
 
 ## Tools
 
-All 36 Jira and Confluence tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
+All 36 Jira and Confluence tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
 
-| In g-jira-mcp / conf-mcp | In @pnam16/atlassian-mcp                                     |
+| In g-jira-mcp / conf-mcp | In @ameforge/atlassian-mcp                                   |
 | ------------------------ | ------------------------------------------------------------ |
 | `add_comment`            | `jira_add_comment`, `confluence_add_comment`                 |
 | `download_attachment`    | `jira_download_attachment`, `confluence_download_attachment` |
@@ -107,7 +107,7 @@ pnpm test
 pnpm release           # release-it: runs check, test and build, then bumps version, commits, tags, pushes (commit your changes first; pnpm publish is a separate step)
 ```
 
-A release of g-jira-mcp, conf-mcp or @pnam16/bitbucket-mcp reaches this package only after it is released too.
+A release of g-jira-mcp, conf-mcp or @ameforge/bitbucket-mcp reaches this package only after it is released too.
 
 ## Support
 
@@ -115,7 +115,7 @@ Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
 
 If this project helps you, consider buying me a coffee:
 
-<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+<img src="https://raw.githubusercontent.com/ameforge/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
 
 ---
 

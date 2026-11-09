@@ -44,7 +44,7 @@
   "repository": {
     "directory": "packages/confluence",
     "type": "git",
-    "url": "git+https://github.com/pnam16/atlassian-mcp.git"
+    "url": "git+https://github.com/ameforge/atlassian-mcp.git"
   },
   "scripts": {
     "build": "rsbuild build",

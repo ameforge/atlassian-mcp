@@ -2,7 +2,7 @@
 
 MCP server for Bitbucket Cloud (REST API 2.0). It reads repositories, branches, commits, diffs, files, code search results and pull requests, and it can open, edit, approve, merge and decline pull requests.
 
-The same tools are also served by [@pnam16/atlassian-mcp](https://github.com/pnam16/atlassian-mcp/tree/main/packages/atlassian) when `BITBUCKET_API_TOKEN` is set there.
+The same tools are also served by [@ameforge/atlassian-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/atlassian) when `BITBUCKET_API_TOKEN` is set there.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ claude mcp add bitbucket-mcp \
   -e BITBUCKET_EMAIL="you@company.com" \
   -e BITBUCKET_API_TOKEN="your_api_token" \
   -e BITBUCKET_WORKSPACE="your-workspace" \
-  -- npx -y @pnam16/bitbucket-mcp@latest
+  -- npx -y @ameforge/bitbucket-mcp@latest
 ```
 
 PowerShell (Windows):
@@ -30,7 +30,7 @@ claude mcp add bitbucket-mcp `
   -e BITBUCKET_EMAIL="you@company.com" `
   -e BITBUCKET_API_TOKEN="your_api_token" `
   -e BITBUCKET_WORKSPACE="your-workspace" `
-  -- npx -y @pnam16/bitbucket-mcp@latest
+  -- npx -y @ameforge/bitbucket-mcp@latest
 ```
 
 Or add it to `.mcp.json`:
@@ -40,7 +40,7 @@ Or add it to `.mcp.json`:
   "mcpServers": {
     "bitbucket-mcp": {
       "command": "npx",
-      "args": ["-y", "@pnam16/bitbucket-mcp@latest"],
+      "args": ["-y", "@ameforge/bitbucket-mcp@latest"],
       "env": {
         "BITBUCKET_EMAIL": "you@company.com",
         "BITBUCKET_API_TOKEN": "your_api_token",
@@ -112,7 +112,7 @@ pnpm build             # bundle to dist/index.js via rsbuild
 pnpm test
 ```
 
-Release from the repo root with `pnpm release:bitbucket`; see [docs/RELEASE.md](https://github.com/pnam16/atlassian-mcp/blob/main/docs/RELEASE.md).
+Release from the repo root with `pnpm release:bitbucket`; see [docs/RELEASE.md](https://github.com/ameforge/atlassian-mcp/blob/main/docs/RELEASE.md).
 
 ## Support
 
@@ -120,7 +120,7 @@ Questions or issues? Email [PNam](mailto:pnamhn16@gmail.com).
 
 If this project helps you, consider buying me a coffee:
 
-<img src="https://raw.githubusercontent.com/pnam16/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
+<img src="https://raw.githubusercontent.com/ameforge/atlassian-mcp/main/docs/buy-me-a-coffee.jpg" alt="Buy Me A Coffee" width="300">
 
 ---
 

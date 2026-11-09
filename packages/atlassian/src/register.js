@@ -1,4 +1,4 @@
-import {registerTools as registerBitbucket} from "@pnam16/bitbucket-mcp/src/register.js";
+import {registerTools as registerBitbucket} from "@ameforge/bitbucket-mcp/src/register.js";
 import {registerTools as registerConfluence} from "conf-mcp/src/register.js";
 import {registerTools as registerJira} from "g-jira-mcp/src/register.js";
 
