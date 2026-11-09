@@ -26,6 +26,9 @@
       "commitsOpts": {
         "path": [".", "../jira", "../confluence", "../bitbucket"]
       },
+      "gitRawCommitsOpts": {
+        "path": [".", "../jira", "../confluence", "../bitbucket"]
+      },
       "preset": {
         "name": "conventionalcommits"
       }
