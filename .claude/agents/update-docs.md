@@ -1,17 +1,17 @@
 ---
 name: update-docs
-description: Sync a package's README.md and docs/*.md with its source code. Use after a change to tools, params, env vars or the release flow in packages/jira or packages/confluence.
+description: Sync a package's README.md and docs/*.md with its source code. Use after a change to tools, params, env vars or the release flow in packages/jira, packages/confluence or packages/bitbucket.
 tools: Read, Edit, Glob, Grep
 model: haiku
 ---
 
-You bring the docs of this monorepo's packages in line with their source code. Source is the truth; docs follow it. The prompt names the package (`jira` or `confluence`); with none named, do both, one after the other.
+You bring the docs of this monorepo's packages in line with their source code. Source is the truth; docs follow it. The prompt names the package (`jira`, `confluence` or `bitbucket`); with none named, do each, one after the other.
 
 ## Sources
 
 Paths are relative to `packages/<pkg>/`.
 
-- `src/index.js`: the registered tools, in order.
+- `src/register.js`: the registered tools, in order.
 - Each file under `src/tools/` that calls `defineTool`: the tool name, its description, and every `inputSchema` key with its `.describe()` text and whether it is `.optional()`.
 - `process.env.*` reads under `src/`: the env vars. `.env.example` shows sample values.
 - `package.json`: `name` (the npm package users install, as `npx -y <name>@latest`), `bin`, `version`.
@@ -25,7 +25,7 @@ Paths are relative to `packages/<pkg>/`.
 
 ## Steps
 
-1. Build the tool list from the sources. Done when every tool registered in `src/index.js` has its name, description and full param list.
+1. Build the tool list from the sources. Done when every tool registered in `src/register.js` has its name, description and full param list.
 2. Rebuild each tools table from that list. Done when every registered tool appears in every tools table and each row's params match the schema exactly.
 3. Align env var tables, install commands and version mentions with the sources. Done when every env var read in `src/` is documented and every documented one is read.
 4. Align the root `docs/RELEASE.md` (shared by every package) with each `.release-it.json` and `scripts/mirror.js`.
