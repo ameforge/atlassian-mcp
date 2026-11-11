@@ -31,7 +31,9 @@ if (hasMain) {
   parent = ["-p", git("rev-parse", "FETCH_HEAD")];
 }
 // The only LICENSE lives at the repo root; add it to the mirror's tree.
-const entries = git("ls-tree", `HEAD:packages/${dir}`)
+// --full-tree: release-it runs this from packages/<dir>, where a plain ls-tree
+// lists nothing.
+const entries = git("ls-tree", "--full-tree", `HEAD:packages/${dir}`)
   .split("\n")
   .filter((line) => !line.endsWith("\tLICENSE"));
 entries.push(`100644 blob ${git("rev-parse", "HEAD:LICENSE")}\tLICENSE`);
