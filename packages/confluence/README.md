@@ -62,12 +62,12 @@ Official setup guides:
 
 ## Environment variables
 
-| Variable              | Required | Description                                                     |
-| --------------------- | -------- | --------------------------------------------------------------- |
-| `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com`                       |
-| `CONFLUENCE_USERNAME` | yes*     | Confluence username                                             |
-| `CONFLUENCE_PASSWORD` | yes*     | Confluence password                                             |
-| `CONFLUENCE_TOKEN`    | no       | Personal Access Token; when set, replaces username/password (*) |
+| Variable              | Required | Description                                                        |
+| --------------------- | -------- | ------------------------------------------------------------------ |
+| `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com`                          |
+| `CONFLUENCE_USERNAME` | yes*     | Confluence username; `ATLASSIAN_USERNAME` is read when it is unset |
+| `CONFLUENCE_PASSWORD` | yes*     | Confluence password; `ATLASSIAN_PASSWORD` is read when it is unset |
+| `CONFLUENCE_TOKEN`    | no       | Personal Access Token; when set, replaces username/password (*)    |
 
 ## Tools
 
@@ -122,9 +122,10 @@ Official setup guides:
 pnpm install
 cp .env.example .env   # edit with your credentials
 pnpm build             # bundle to dist/index.js via rsbuild
-pnpm lint              # biome check + tsc
-pnpm release           # release-it: runs lint, test and build, then bumps version, commits, tags, pushes (commit your changes first; pnpm publish is a separate step)
+pnpm test
 ```
+
+Release from the repo root with `pnpm release:conf`; see [docs/RELEASE.md](https://github.com/ameforge/atlassian-mcp/blob/main/docs/RELEASE.md).
 
 ## Support
 
