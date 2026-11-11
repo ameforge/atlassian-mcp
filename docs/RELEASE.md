@@ -35,7 +35,7 @@ Không sửa code trong repo mirror: lần release sau ghi đè.
 
 Tag `atlassian-v*` kích hoạt `.github/workflows/publish.yml`, một lần cho mỗi lệnh release. Workflow publish mọi package có version chưa có trên npm (qua `pnpm pack` và npm trusted publishing, không cần token) và tạo GitHub release với danh sách commit của package. Package đã release mà chưa publish sẽ được publish ở lần release atlassian tiếp theo.
 
-Workflow lỗi thì publish tay: `pnpm publish:<jira|conf|bitbucket|atlassian> --otp=<mã>`. Không chạy lệnh này sau một release thành công.
+Workflow lỗi thì publish tay: `pnpm publish:<jira|conf|bitbucket|atlassian>`, xác thực như mục Publish tay bên dưới. Không chạy lệnh này sau một release thành công.
 
 Không có workflow CI: hook `.githooks/pre-push` chạy check và test trước khi push lên `origin` (bỏ qua bằng `git push --no-verify`).
 
@@ -51,4 +51,40 @@ Trên npmjs.com, Settings, Trusted Publisher, GitHub Actions:
 
 Không sửa được sau khi tạo; muốn đổi thì xóa và tạo lại.
 
-Mục Trusted Publisher nằm trong trang settings của một package đã có trên npm, nên package mới (ví dụ `@ameforge/bitbucket-mcp`) cần publish tay lần đầu bằng `pnpm publish:bitbucket --otp=<mã>`, rồi mới cấu hình như trên. Nếu chưa làm bước này, workflow sẽ dừng ở package đó và các package sau nó trong vòng lặp cũng không được publish.
+Mục Trusted Publisher nằm trong trang settings của một package đã có trên npm, nên package mới (ví dụ `@ameforge/bitbucket-mcp`) cần publish tay lần đầu như mục dưới, rồi mới cấu hình như trên. Nếu chưa làm bước này, workflow sẽ dừng ở package đó và các package sau nó trong vòng lặp cũng không được publish.
+
+## Publish tay
+
+Dùng cho lần publish đầu của một package mới, hoặc khi workflow lỗi.
+
+1. Kiểm tra tài khoản và scope:
+
+   ```bash
+   npm whoami              # tài khoản npm đang đăng nhập
+   npm org ls ameforge     # phải có tài khoản đó với quyền owner hoặc admin
+   ```
+
+   `Scope not found` nghĩa là organization chưa có: tạo ở <https://www.npmjs.com/org/create> (gói free cho package public).
+
+2. Publish theo thứ tự bitbucket trước, atlassian sau, vì `@ameforge/atlassian-mcp` phụ thuộc `@ameforge/bitbucket-mcp`:
+
+   ```bash
+   pnpm publish:bitbucket
+   pnpm publish:atlassian
+   ```
+
+   Luôn dùng `pnpm publish:<package>`, không dùng `npm publish` trong thư mục package: chỉ pnpm thay `workspace:*` bằng version thật.
+
+3. Xác thực 2FA:
+   - Mã 6 số từ app authenticator: thêm `--otp=<mã>` vào lệnh.
+   - Passkey: không có mã để nhập, nên chạy lệnh trong một terminal tương tác (PowerShell, Windows Terminal) và làm theo hướng dẫn xác thực của pnpm. Chạy từ nơi không có terminal tương tác (ví dụ lệnh `!` trong Claude Code) sẽ dừng với lỗi `ERR_PNPM_OTP_NON_INTERACTIVE` và không publish gì.
+
+4. Kiểm tra:
+
+   ```bash
+   npm view @ameforge/bitbucket-mcp versions
+   ```
+
+   Danh sách phải có version trong `package.json`. Nếu chỉ thấy `0.0.0-stage` (mô tả "Temporary package placeholder for staged publishing") thì version thật chưa được publish: chạy lại bước 2 và 3.
+
+5. Cấu hình trusted publishing cho package như mục trên, để các lần sau workflow tự publish.
