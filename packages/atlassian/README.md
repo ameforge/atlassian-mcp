@@ -1,11 +1,12 @@
 # Atlassian self-hosted mcp
 
-MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence), so an AI assistant needs one server entry instead of two.
+MCP server for self-hosted Jira and Confluence (Server/Data Center) in one process. It serves every tool of [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence), so an AI assistant needs one server entry instead of two. With a Bitbucket Cloud API token it also serves the tools of [@ameforge/bitbucket-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket).
 
 ## Requirements
 
 - A Jira Server/Data Center account and a Confluence Server/Data Center account.
 - Node.js 18+.
+- Optional: a Bitbucket Cloud API token, for the Bitbucket tools.
 
 ## Quick start
 
@@ -39,6 +40,8 @@ claude mcp add atlassian-mcp `
 
 Command Prompt (cmd.exe): put the whole command on one line, or end each line with `^` instead of `\`.
 
+To add the Bitbucket tools, add `-e BITBUCKET_EMAIL="you@company.com"`, `-e BITBUCKET_API_TOKEN="your_api_token"` and `-e BITBUCKET_WORKSPACE="your-workspace"` to the command, or the same keys to `env` below.
+
 Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
 
 ```json
@@ -71,21 +74,24 @@ Official setup guides:
 
 ## Environment variables
 
-| Variable                | Required | Description                                                     |
-| ----------------------- | -------- | --------------------------------------------------------------- |
-| `JIRA_HOST`             | yes      | Base URL, e.g. `https://jira.company.com`                       |
-| `JIRA_USERNAME`         | yes*     | Jira username                                                   |
-| `JIRA_PASSWORD`         | yes*     | Jira password                                                   |
-| `JIRA_TOKEN`            | no       | Personal Access Token; when set, replaces username/password (*) |
-| `JIRA_START_DATE_FIELD` | no       | Custom field ID for "Start date" (default `customfield_11300`)  |
-| `JIRA_EPIC_LINK_FIELD`  | no       | Custom field ID for "Epic Link" (default `customfield_10001`)   |
-| `JIRA_TIMEZONE`         | no       | Timezone for WorklogPRO form (default `Asia/Ho_Chi_Minh`)       |
-| `CONFLUENCE_HOST`       | yes      | Base URL, e.g. `https://conf.company.com`                       |
-| `CONFLUENCE_USERNAME`   | yes*     | Confluence username                                             |
-| `CONFLUENCE_PASSWORD`   | yes*     | Confluence password                                             |
-| `CONFLUENCE_TOKEN`      | no       | Personal Access Token; when set, replaces username/password (*) |
+| Variable                | Required   | Description                                                               |
+| ----------------------- | ---------- | ------------------------------------------------------------------------- |
+| `JIRA_HOST`             | yes        | Base URL, e.g. `https://jira.company.com`                                 |
+| `JIRA_USERNAME`         | yes*       | Jira username                                                             |
+| `JIRA_PASSWORD`         | yes*       | Jira password                                                             |
+| `JIRA_TOKEN`            | no         | Personal Access Token; when set, replaces username/password (*)           |
+| `JIRA_START_DATE_FIELD` | no         | Custom field ID for "Start date" (default `customfield_11300`)            |
+| `JIRA_EPIC_LINK_FIELD`  | no         | Custom field ID for "Epic Link" (default `customfield_10001`)             |
+| `JIRA_TIMEZONE`         | no         | Timezone for WorklogPRO form (default `Asia/Ho_Chi_Minh`)                 |
+| `CONFLUENCE_HOST`       | yes        | Base URL, e.g. `https://conf.company.com`                                 |
+| `CONFLUENCE_USERNAME`   | yes*       | Confluence username                                                       |
+| `CONFLUENCE_PASSWORD`   | yes*       | Confluence password                                                       |
+| `CONFLUENCE_TOKEN`      | no         | Personal Access Token; when set, replaces username/password (*)           |
+| `BITBUCKET_API_TOKEN`   | no         | Bitbucket Cloud API token; the Bitbucket tools appear only when it is set |
+| `BITBUCKET_EMAIL`       | with token | Atlassian account email of the token                                      |
+| `BITBUCKET_WORKSPACE`   | no         | Default workspace slug; without it every Bitbucket tool needs `workspace` |
 
-Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 22 tools of [@ameforge/bitbucket-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
+`ATLASSIAN_EMAIL` is read when `BITBUCKET_EMAIL` is unset. `ATLASSIAN_API_TOKEN` alone does not turn on the Bitbucket tools here; set `BITBUCKET_API_TOKEN`.
 
 ## Tools
 
@@ -95,6 +101,8 @@ All 38 Jira and Confluence tools keep the names and parameters documented in the
 | ------------------------ | ------------------------------------------------------------ |
 | `add_comment`            | `jira_add_comment`, `confluence_add_comment`                 |
 | `download_attachment`    | `jira_download_attachment`, `confluence_download_attachment` |
+
+When `BITBUCKET_API_TOKEN` is set, the 22 Bitbucket tools are added with the names and parameters in the [@ameforge/bitbucket-mcp README](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket#tools).
 
 All logs go to stderr; stdout is reserved for the MCP protocol.
 
