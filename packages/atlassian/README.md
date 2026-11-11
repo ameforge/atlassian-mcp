@@ -85,7 +85,7 @@ Official setup guides:
 | `CONFLUENCE_PASSWORD`   | yes*     | Confluence password                                             |
 | `CONFLUENCE_TOKEN`      | no       | Personal Access Token; when set, replaces username/password (*) |
 
-Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 16 tools of [@ameforge/bitbucket-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
+Bitbucket Cloud is optional. When `BITBUCKET_API_TOKEN` is set, the server also serves the 15 tools of [@ameforge/bitbucket-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket) and reads `BITBUCKET_EMAIL` and `BITBUCKET_WORKSPACE` as described there. When it is not set, no Bitbucket tool appears.
 
 ## Tools
 

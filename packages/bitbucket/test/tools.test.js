@@ -8,18 +8,6 @@ import {runTool} from "./helpers/fake-server.js";
 const REPO = "/repositories/ws/svc";
 const ws = {repo_slug: "svc", workspace: "ws"};
 
-test("search_code scopes the query to repo_slug", async () => {
-  const {requests} = await runTool(
-    registerRepoTools,
-    "search_code",
-    {query: "foo", ...ws},
-    [["/workspaces/ws/search/code", {values: []}]],
-  );
-  assert.deepEqual(requests, [
-    "GET /workspaces/ws/search/code?search_query=foo%20repo%3Asvc&pagelen=20",
-  ]);
-});
-
 test("get_file reads a branch with a slash at its head commit", async () => {
   const {out, requests} = await runTool(
     registerRepoTools,

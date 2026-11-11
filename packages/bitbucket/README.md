@@ -1,6 +1,6 @@
 # Bitbucket Cloud mcp
 
-MCP server for Bitbucket Cloud (REST API 2.0). It reads repositories, branches, commits, diffs, files, code search results and pull requests, and it can open, edit, approve, merge and decline pull requests.
+MCP server for Bitbucket Cloud (REST API 2.0). It reads repositories, branches, commits, diffs, files and pull requests, and it can open, edit, approve, merge and decline pull requests.
 
 The same tools are also served by [@ameforge/atlassian-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/atlassian) when `BITBUCKET_API_TOKEN` is set there.
 
@@ -76,7 +76,6 @@ Read:
 | ------------------ | ---------------------------------------------------------------------------------------------------- |
 | `list_repos`       | Repositories sorted by slug, filtered by `project_key` or `name_filter`                              |
 | `get_repo`         | Default branch, clone URLs, 5 recent commits, open PR count                                          |
-| `search_code`      | Matching lines per file, in the workspace or one `repo_slug`                                         |
 | `get_file`         | File content at `ref`; over 100,000 characters it is cut, a binary file returns no content           |
 | `get_branch`       | Head commit, whether it is the default branch, commits behind the default branch                     |
 | `compare_branches` | Commits ahead and behind (up to 100 listed each way) and files changed between `source` and `target` |
@@ -84,6 +83,8 @@ Read:
 | `get_commits`      | Commits from `branch`, filtered by `since` and `author`, up to `max_results`                         |
 | `list_prs`         | PRs by `state` (`OPEN`, `MERGED`, `DECLINED`, `ALL`) and `author`, up to 100 per state               |
 | `get_pr`           | Description, reviewers, participants, general and inline comments by file, commits, Jira keys        |
+
+There is no code search tool: Bitbucket Cloud retired its code search API (it answers 410, CHANGE-3167). Search a local clone instead, for example `git fetch origin` then `git grep -n "pattern" origin/main`.
 
 Write:
 
