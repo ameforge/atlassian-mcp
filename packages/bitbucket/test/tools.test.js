@@ -173,3 +173,69 @@ test("get_pr reads the PR, comments and commits only, and groups inline comments
   assert.deepEqual(out.jira_tickets, ["PROJ-3", "TEAM-12"]);
   assert.equal(out.commits[0].message, "TEAM-12 fix");
 });
+
+test("list_files lists a folder of a branch with a slash at its head commit", async () => {
+  const {out, requests} = await runTool(
+    registerRepoTools,
+    "list_files",
+    {path: "src/", ref: "feature/x", ...ws},
+    [
+      [`${REPO}/refs/branches/`, {target: {hash: "abc123"}}],
+      [
+        `${REPO}/src/`,
+        {
+          values: [
+            {path: "src/lib", type: "commit_directory"},
+            {path: "src/a.js", size: 5, type: "commit_file"},
+          ],
+        },
+      ],
+    ],
+  );
+  assert.deepEqual(requests, [
+    `GET ${REPO}/refs/branches/feature%2Fx?fields=target.hash`,
+    `GET ${REPO}/src/abc123/src/?pagelen=100`,
+  ]);
+  assert.deepEqual(out.entries, [
+    {path: "src/lib", type: "folder"},
+    {path: "src/a.js", size: 5, type: "file"},
+  ]);
+});
+
+test("get_build_status reads the statuses of a branch's head commit", async () => {
+  const {out, requests} = await runTool(
+    registerBranchTools,
+    "get_build_status",
+    {ref: "feature/x", ...ws},
+    [
+      [`${REPO}/refs/branches/`, {target: {hash: "abc123"}}],
+      [
+        `${REPO}/commit/abc123/statuses`,
+        {values: [{name: "build", state: "FAILED"}]},
+      ],
+    ],
+  );
+  assert.deepEqual(requests, [
+    `GET ${REPO}/refs/branches/feature%2Fx?fields=target.hash`,
+    `GET ${REPO}/commit/abc123/statuses?pagelen=100`,
+  ]);
+  assert.equal(out.statuses[0].state, "FAILED");
+});
+
+test("create_branch starts from the default branch's head commit", async () => {
+  const {requests} = await runTool(
+    registerBranchTools,
+    "create_branch",
+    {name: "feature/y", ...ws},
+    [
+      [`${REPO}/refs/branches/develop`, {target: {hash: "abc123"}}],
+      [`${REPO}/refs/branches`, {name: "feature/y"}],
+      [REPO, {mainbranch: {name: "develop"}}],
+    ],
+  );
+  assert.deepEqual(requests, [
+    `GET ${REPO}`,
+    `GET ${REPO}/refs/branches/develop?fields=target.hash`,
+    `POST ${REPO}/refs/branches ${JSON.stringify({name: "feature/y", target: {hash: "abc123"}})}`,
+  ]);
+});

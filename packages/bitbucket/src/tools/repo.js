@@ -13,6 +13,31 @@ import {
 
 const MAX_FILE_CHARS = 100_000;
 
+/** The ref to put in a src URL, defaulting to the default branch. */
+const srcRef = async (bb, base, ref) => {
+  const wanted = ref || (await bb("GET", base)).mainbranch?.name || "HEAD";
+  // The src endpoint cannot take a branch name with "/" in the path, so
+  // such a branch is read at its head commit. A tag with "/" is not a
+  // branch and falls through as is.
+  if (wanted.includes("/")) {
+    try {
+      const branch = await bb(
+        "GET",
+        `${base}/refs/branches/${encodeURIComponent(wanted)}?fields=target.hash`,
+      );
+      return {resolved: branch?.target?.hash ?? wanted, wanted};
+    } catch {}
+  }
+  return {resolved: wanted, wanted};
+};
+
+const srcPath = (path) =>
+  path
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/");
+
 const normalizeRepo = (raw, ws) => {
   const links = raw.links ?? {};
   const clone = Object.fromEntries(
@@ -119,25 +144,8 @@ export const registerRepoTools = (server, bbRequest) => {
     },
     async ({repo_slug, path, ref, workspace}, bb) => {
       const base = repoPath(workspace, repo_slug);
-      const wanted = ref || (await bb("GET", base)).mainbranch?.name || "HEAD";
-      let resolved = wanted;
-      // The src endpoint cannot take a branch name with "/" in the path, so
-      // such a branch is read at its head commit. A tag with "/" is not a
-      // branch and falls through as is.
-      if (wanted.includes("/")) {
-        try {
-          const branch = await bb(
-            "GET",
-            `${base}/refs/branches/${encodeURIComponent(wanted)}?fields=target.hash`,
-          );
-          resolved = branch?.target?.hash ?? wanted;
-        } catch {}
-      }
-      const filePath = path
-        .replace(/^\/+/, "")
-        .split("/")
-        .map(encodeURIComponent)
-        .join("/");
+      const {wanted, resolved} = await srcRef(bb, base, ref);
+      const filePath = srcPath(path);
       const text = await bb(
         "GET",
         `${base}/src/${encodeURIComponent(resolved)}/${filePath}`,
@@ -155,6 +163,50 @@ export const registerRepoTools = (server, bbRequest) => {
         resolved_ref: resolved,
         // A binary body decoded as UTF-8 grows, so its byte count is not the file size.
         size: binary ? null : Buffer.byteLength(text),
+      };
+    },
+    bbRequest,
+  );
+
+  defineTool(
+    server,
+    "list_files",
+    {
+      description:
+        "List the files and folders directly inside a folder at a branch, tag or commit. Pass a folder from the result as path to go deeper",
+      inputSchema: z.object({
+        path: z
+          .string()
+          .optional()
+          .describe(
+            "Folder from the repo root, e.g. src; defaults to the root",
+          ),
+        ref: z
+          .string()
+          .optional()
+          .describe("Branch, tag or commit; defaults to the default branch"),
+        repo_slug,
+        workspace,
+      }),
+    },
+    async ({repo_slug, path = "", ref, workspace}, bb) => {
+      const base = repoPath(workspace, repo_slug);
+      const {wanted, resolved} = await srcRef(bb, base, ref);
+      const dir = srcPath(path);
+      const {truncated, values} = await paginate(
+        bb,
+        `${base}/src/${encodeURIComponent(resolved)}/${dir ? `${dir}/` : ""}?pagelen=100`,
+      );
+      return {
+        entries: values.map((e) => ({
+          path: e.path,
+          size: e.size,
+          type: e.type === "commit_directory" ? "folder" : "file",
+        })),
+        path,
+        ref: wanted,
+        resolved_ref: resolved,
+        truncated,
       };
     },
     bbRequest,
