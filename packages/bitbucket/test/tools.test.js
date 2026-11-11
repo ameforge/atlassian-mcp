@@ -239,3 +239,21 @@ test("create_branch starts from the default branch's head commit", async () => {
     `POST ${REPO}/refs/branches ${JSON.stringify({name: "feature/y", target: {hash: "abc123"}})}`,
   ]);
 });
+
+test("list_branches quotes name_filter and sorts by newest commit", async () => {
+  const {out, requests} = await runTool(
+    registerBranchTools,
+    "list_branches",
+    {name_filter: 'x" OR name ~ "', ...ws},
+    [
+      [
+        `${REPO}/refs/branches`,
+        {values: [{name: "feature/x", target: {hash: "abc"}}]},
+      ],
+    ],
+  );
+  assert.deepEqual(requests, [
+    `GET ${REPO}/refs/branches?sort=-target.date&pagelen=50&q=${encodeURIComponent('name ~ "x\\" OR name ~ \\""')}`,
+  ]);
+  assert.equal(out.branches[0].name, "feature/x");
+});

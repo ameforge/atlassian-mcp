@@ -78,6 +78,7 @@ Read:
 | `get_repo`         | Default branch, clone URLs, 5 recent commits, open PR count                                          |
 | `get_file`         | File content at `ref`; over 100,000 characters it is cut, a binary file returns no content           |
 | `list_files`       | Files and folders directly inside `path` at `ref`, with file sizes                                   |
+| `list_branches`    | Branches with their last commit, newest first, filtered by `name_filter`                             |
 | `get_branch`       | Head commit, whether it is the default branch, commits behind the default branch                     |
 | `compare_branches` | Commits ahead and behind (up to 100 listed each way) and files changed between `source` and `target` |
 | `get_diff`         | Unified diff and per-file stats for `from_ref..to_ref`; diff text over 100,000 characters is cut     |

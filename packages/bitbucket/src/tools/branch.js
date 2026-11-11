@@ -6,6 +6,7 @@ import {
   countOf,
   fileStat,
   paginate,
+  quoteQ,
   repo_slug,
   repoPath,
   specPath,
@@ -37,6 +38,40 @@ const commitOf = async (bb, base, ref) =>
         .target.hash;
 
 export const registerBranchTools = (server, bbRequest) => {
+  defineTool(
+    server,
+    "list_branches",
+    {
+      description:
+        "List branches, most recently updated first, optionally only those whose name contains name_filter. Returns the 50 newest; when truncated, narrow with name_filter. Use get_branch for one branch's details",
+      inputSchema: z.object({
+        name_filter: z
+          .string()
+          .optional()
+          .describe("Part of the branch name, e.g. KJMTP2-7024 or release"),
+        repo_slug,
+        workspace,
+      }),
+    },
+    async ({repo_slug, name_filter, workspace}, bb) => {
+      const base = repoPath(workspace, repo_slug);
+      const q = name_filter ? `&q=${enc(`name ~ ${quoteQ(name_filter)}`)}` : "";
+      const {truncated, values} = await paginate(
+        bb,
+        `${base}/refs/branches?sort=-target.date&pagelen=50${q}`,
+        1,
+      );
+      return {
+        branches: values.map((b) => ({
+          last_commit: commitInfo(b.target ?? {}),
+          name: b.name,
+        })),
+        truncated,
+      };
+    },
+    bbRequest,
+  );
+
   defineTool(
     server,
     "get_branch",
