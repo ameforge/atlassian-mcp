@@ -16,12 +16,10 @@ bash / zsh (macOS, Linux, Git Bash or WSL on Windows):
 
 ```bash
 claude mcp add atlassian-mcp \
-  -e JIRA_HOST="https://jira.company.com" \
-  -e JIRA_USERNAME="your_username" \
-  -e JIRA_PASSWORD="your_password" \
+  -e ATLASSIAN_PASSWORD="your_password" \
+  -e ATLASSIAN_USERNAME="your_username" \
   -e CONFLUENCE_HOST="https://conf.company.com" \
-  -e CONFLUENCE_USERNAME="your_username" \
-  -e CONFLUENCE_PASSWORD="your_password" \
+  -e JIRA_HOST="https://jira.company.com" \
   -- npx -y @ameforge/atlassian-mcp@latest
 ```
 
@@ -29,18 +27,14 @@ PowerShell (Windows):
 
 ```powershell
 claude mcp add atlassian-mcp `
-  -e JIRA_HOST="https://jira.company.com" `
-  -e JIRA_USERNAME="your_username" `
-  -e JIRA_PASSWORD="your_password" `
+  -e ATLASSIAN_PASSWORD="your_password" `
+  -e ATLASSIAN_USERNAME="your_username" `
   -e CONFLUENCE_HOST="https://conf.company.com" `
-  -e CONFLUENCE_USERNAME="your_username" `
-  -e CONFLUENCE_PASSWORD="your_password" `
+  -e JIRA_HOST="https://jira.company.com" `
   -- npx -y @ameforge/atlassian-mcp@latest
 ```
 
 Command Prompt (cmd.exe): put the whole command on one line, or end each line with `^` instead of `\`.
-
-To add the Bitbucket tools, add `-e BITBUCKET_EMAIL="you@company.com"`, `-e BITBUCKET_API_TOKEN="your_api_token"` and `-e BITBUCKET_WORKSPACE="your-workspace"` to the command, or the same keys to `env` below.
 
 Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
 
@@ -51,16 +45,24 @@ Or manually add to `.claude/settings.json` (or `claude_desktop_config.json`):
       "command": "npx",
       "args": ["-y", "@ameforge/atlassian-mcp@latest"],
       "env": {
-        "JIRA_HOST": "https://jira.company.com",
-        "JIRA_USERNAME": "your_username",
-        "JIRA_PASSWORD": "your_password",
+        "ATLASSIAN_PASSWORD": "your_password",
+        "ATLASSIAN_USERNAME": "your_username",
         "CONFLUENCE_HOST": "https://conf.company.com",
-        "CONFLUENCE_USERNAME": "your_username",
-        "CONFLUENCE_PASSWORD": "your_password"
+        "JIRA_HOST": "https://jira.company.com"
       }
     }
   }
 }
+```
+
+`ATLASSIAN_USERNAME` and `ATLASSIAN_PASSWORD` sign in to both Jira and Confluence. If the two use different accounts, set `JIRA_USERNAME`, `JIRA_PASSWORD`, `CONFLUENCE_USERNAME` and `CONFLUENCE_PASSWORD` instead.
+
+To add the Bitbucket tools, add these three to the command, or the same keys to `env`:
+
+```bash
+  -e BITBUCKET_API_TOKEN="your_api_token" \
+  -e BITBUCKET_EMAIL="you@company.com" \
+  -e BITBUCKET_WORKSPACE="your-workspace" \
 ```
 
 Restart Claude Code/Desktop after editing the config.
@@ -74,24 +76,26 @@ Official setup guides:
 
 ## Environment variables
 
-| Variable                | Required   | Description                                                               |
-| ----------------------- | ---------- | ------------------------------------------------------------------------- |
-| `JIRA_HOST`             | yes        | Base URL, e.g. `https://jira.company.com`                                 |
-| `JIRA_USERNAME`         | yes*       | Jira username                                                             |
-| `JIRA_PASSWORD`         | yes*       | Jira password                                                             |
-| `JIRA_TOKEN`            | no         | Personal Access Token; when set, replaces username/password (*)           |
-| `JIRA_START_DATE_FIELD` | no         | Custom field ID for "Start date" (default `customfield_11300`)            |
-| `JIRA_EPIC_LINK_FIELD`  | no         | Custom field ID for "Epic Link" (default `customfield_10001`)             |
-| `JIRA_TIMEZONE`         | no         | Timezone for WorklogPRO form (default `Asia/Ho_Chi_Minh`)                 |
-| `CONFLUENCE_HOST`       | yes        | Base URL, e.g. `https://conf.company.com`                                 |
-| `CONFLUENCE_USERNAME`   | yes*       | Confluence username                                                       |
-| `CONFLUENCE_PASSWORD`   | yes*       | Confluence password                                                       |
-| `CONFLUENCE_TOKEN`      | no         | Personal Access Token; when set, replaces username/password (*)           |
-| `BITBUCKET_API_TOKEN`   | no         | Bitbucket Cloud API token; the Bitbucket tools appear only when it is set |
-| `BITBUCKET_EMAIL`       | with token | Atlassian account email of the token                                      |
-| `BITBUCKET_WORKSPACE`   | no         | Default workspace slug; without it every Bitbucket tool needs `workspace` |
+| Variable                | Required   | Description                                                                      |
+| ----------------------- | ---------- | -------------------------------------------------------------------------------- |
+| `ATLASSIAN_PASSWORD`    | yes*       | Password for Jira and Confluence                                                 |
+| `ATLASSIAN_USERNAME`    | yes*       | Username for Jira and Confluence                                                 |
+| `BITBUCKET_API_TOKEN`   | no         | Bitbucket Cloud API token; the Bitbucket tools appear only when it is set        |
+| `BITBUCKET_EMAIL`       | with token | Atlassian account email of the token; `ATLASSIAN_EMAIL` is read when it is unset |
+| `BITBUCKET_WORKSPACE`   | no         | Default workspace slug; without it every Bitbucket tool needs `workspace`        |
+| `CONFLUENCE_HOST`       | yes        | Base URL, e.g. `https://conf.company.com`                                        |
+| `CONFLUENCE_PASSWORD`   | no         | Confluence password; overrides `ATLASSIAN_PASSWORD`                              |
+| `CONFLUENCE_TOKEN`      | no         | Personal Access Token; when set, replaces username/password (*)                  |
+| `CONFLUENCE_USERNAME`   | no         | Confluence username; overrides `ATLASSIAN_USERNAME`                              |
+| `JIRA_EPIC_LINK_FIELD`  | no         | Custom field ID for "Epic Link" (default `customfield_10001`)                    |
+| `JIRA_HOST`             | yes        | Base URL, e.g. `https://jira.company.com`                                        |
+| `JIRA_PASSWORD`         | no         | Jira password; overrides `ATLASSIAN_PASSWORD`                                    |
+| `JIRA_START_DATE_FIELD` | no         | Custom field ID for "Start date" (default `customfield_11300`)                   |
+| `JIRA_TIMEZONE`         | no         | Timezone for WorklogPRO form (default `Asia/Ho_Chi_Minh`)                        |
+| `JIRA_TOKEN`            | no         | Personal Access Token; when set, replaces username/password (*)                  |
+| `JIRA_USERNAME`         | no         | Jira username; overrides `ATLASSIAN_USERNAME`                                    |
 
-`ATLASSIAN_EMAIL` is read when `BITBUCKET_EMAIL` is unset. `ATLASSIAN_API_TOKEN` alone does not turn on the Bitbucket tools here; set `BITBUCKET_API_TOKEN`.
+`ATLASSIAN_API_TOKEN` alone does not turn on the Bitbucket tools here; set `BITBUCKET_API_TOKEN`.
 
 ## Tools
 
@@ -112,10 +116,9 @@ All logs go to stderr; stdout is reserved for the MCP protocol.
 pnpm install
 pnpm build             # bundle to dist/index.js via rsbuild
 pnpm test
-pnpm release           # release-it: runs check, test and build, then bumps version, commits, tags, pushes (commit your changes first; pnpm publish is a separate step)
 ```
 
-A release of g-jira-mcp, conf-mcp or @ameforge/bitbucket-mcp reaches this package only after it is released too.
+Release from the repo root with `pnpm release:atlassian`; see [docs/RELEASE.md](https://github.com/ameforge/atlassian-mcp/blob/main/docs/RELEASE.md). A release of g-jira-mcp, conf-mcp or @ameforge/bitbucket-mcp reaches this package only after it is released too.
 
 ## Support
 
