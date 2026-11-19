@@ -91,7 +91,7 @@ Official setup guides:
 | `JIRA_HOST`             | yes        | Base URL, e.g. `https://jira.company.com`                                        |
 | `JIRA_PASSWORD`         | no         | Jira password; overrides `ATLASSIAN_PASSWORD`                                    |
 | `JIRA_START_DATE_FIELD` | no         | Custom field ID for "Start date" (default `customfield_11300`)                   |
-| `JIRA_TIMEZONE`         | no         | Timezone for WorklogPRO form (default `Asia/Ho_Chi_Minh`)                        |
+| `JIRA_TIMEZONE`         | no         | Timezone for WorklogPRO form (default: this machine's timezone)                  |
 | `JIRA_TOKEN`            | no         | Personal Access Token; when set, replaces username/password (*)                  |
 | `JIRA_USERNAME`         | no         | Jira username; overrides `ATLASSIAN_USERNAME`                                    |
 
