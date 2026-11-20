@@ -1,0 +1,9 @@
+{
+  "description": "Request rules shared by the Jira, Confluence and Bitbucket clients; bundled into each package's dist, never published",
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "@ameforge/atlassian-request",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0"
+}

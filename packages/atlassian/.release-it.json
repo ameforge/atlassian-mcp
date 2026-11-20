@@ -24,10 +24,10 @@
   "plugins": {
     "@release-it/conventional-changelog": {
       "commitsOpts": {
-        "path": [".", "../jira", "../confluence", "../bitbucket"]
+        "path": [".", "../jira", "../confluence", "../bitbucket", "../request"]
       },
       "gitRawCommitsOpts": {
-        "path": [".", "../jira", "../confluence", "../bitbucket"]
+        "path": [".", "../jira", "../confluence", "../bitbucket", "../request"]
       },
       "preset": {
         "name": "conventionalcommits"
