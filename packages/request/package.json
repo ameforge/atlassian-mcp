@@ -4,6 +4,9 @@
   "main": "src/index.js",
   "name": "@ameforge/atlassian-request",
   "private": true,
+  "scripts": {
+    "test": "node --test"
+  },
   "type": "module",
   "version": "0.0.0"
 }
