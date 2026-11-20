@@ -48,9 +48,10 @@ jobs:
             if ! git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
               echo "::error::$name@$version is not on npm and tag $tag does not exist"; exit 1
             fi
-            # HEAD must carry the same package code as its release tag.
-            if ! git diff --quiet "$tag" HEAD -- "packages/$dir"; then
-              echo "::error::packages/$dir changed after $tag; release it again"; exit 1
+            # HEAD must carry the same package code as its release tag, including
+            # packages/request, which every dist bundles.
+            if ! git diff --quiet "$tag" HEAD -- "packages/$dir" packages/request; then
+              echo "::error::packages/$dir or packages/request changed after $tag; release it again"; exit 1
             fi
 
             pnpm -C "packages/$dir" pack --pack-destination "$RUNNER_TEMP/$dir"
