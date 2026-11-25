@@ -86,6 +86,28 @@ test("usage_report counts only the last days and skips unreadable lines", async 
   assert.match(await report({days: 90}), /2 done, 2 calls /);
 });
 
+test("usage_report days are calendar days that include today", async () => {
+  const dir = join(process.env.XDG_CONFIG_HOME, "atlassian-mcp");
+  await mkdir(dir);
+  const midnight = new Date().setHours(0, 0, 0, 0);
+  await writeFile(
+    join(dir, "usage.jsonl"),
+    [midnight - 1, midnight]
+      .map((t) =>
+        JSON.stringify({
+          ok: true,
+          pkg: "jira",
+          t: new Date(t).toISOString(),
+          tool: "log_work",
+        }),
+      )
+      .join("\n"),
+  );
+
+  assert.match(await report({days: 1}), /1 done, 1 call /);
+  assert.match(await report({days: 2}), /2 done, 2 calls /);
+});
+
 test("usage_report html writes a board with the counts and opens it", async () => {
   const server = fakeServer();
   withUsage(server, "jira").registerTool("log_work", {}, async () => ok);

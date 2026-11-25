@@ -23,6 +23,8 @@
       "!**/node_modules",
       "!**/SKILL.md",
       "!**/.claude",
+      "!DESIGN.md",
+      "!**/.impeccable",
       "!**/package-lock.json",
       "!**/package.json",
       "!**/pnpm-lock.yaml"
