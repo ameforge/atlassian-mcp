@@ -4,6 +4,7 @@
   },
   "description": "MCP server for Jira and Confluence Server/Data Center in one process, plus Bitbucket Cloud when configured",
   "devDependencies": {
+    "@ameforge/atlassian-request": "workspace:*",
     "@ameforge/bitbucket-mcp": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@rsbuild/core": "^2.3.1",

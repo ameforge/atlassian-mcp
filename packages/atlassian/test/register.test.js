@@ -14,6 +14,8 @@ const count = (register) => {
   return n;
 };
 const JIRA_AND_CONFLUENCE = count(registerJira) + count(registerConfluence);
+// usage_report reads the log every package writes, so it is registered once.
+const USAGE_REPORT = 1;
 
 // The real McpServer throws on a duplicate tool name, which would stop the
 // combined server at startup. Returns the names registered with the given
@@ -40,8 +42,9 @@ const registeredNames = (bitbucketToken) => {
 
 test("registers every Jira and Confluence tool on one server", () => {
   const names = registeredNames(undefined);
-  assert.equal(names.length, JIRA_AND_CONFLUENCE);
+  assert.equal(names.length, JIRA_AND_CONFLUENCE + USAGE_REPORT);
   for (const name of [
+    "usage_report",
     "jira_add_comment",
     "confluence_add_comment",
     "jira_download_attachment",
@@ -56,7 +59,10 @@ test("registers every Jira and Confluence tool on one server", () => {
 
 test("adds the Bitbucket tools only when BITBUCKET_API_TOKEN is set", () => {
   const names = registeredNames("token");
-  assert.equal(names.length, JIRA_AND_CONFLUENCE + count(registerBitbucket));
+  assert.equal(
+    names.length,
+    JIRA_AND_CONFLUENCE + count(registerBitbucket) + USAGE_REPORT,
+  );
   for (const name of ["get_pr", "create_pr", "merge_pr", "get_ticket"]) {
     assert.ok(names.includes(name), name);
   }

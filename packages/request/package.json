@@ -1,5 +1,8 @@
 {
   "description": "Request rules shared by the Jira, Confluence and Bitbucket clients; bundled into each package's dist, never published",
+  "devDependencies": {
+    "zod": "^3.25.76"
+  },
   "license": "MIT",
   "main": "src/index.js",
   "name": "@ameforge/atlassian-request",

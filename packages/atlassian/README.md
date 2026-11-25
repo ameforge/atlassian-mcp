@@ -78,6 +78,7 @@ Official setup guides:
 
 | Variable                | Required   | Description                                                                      |
 | ----------------------- | ---------- | -------------------------------------------------------------------------------- |
+| `ATLASSIAN_MCP_USAGE`   | no         | Set to `off` to turn off the local usage log (see Usage log)                     |
 | `ATLASSIAN_PASSWORD`    | yes*       | Password for Jira and Confluence                                                 |
 | `ATLASSIAN_USERNAME`    | yes*       | Username for Jira and Confluence                                                 |
 | `BITBUCKET_API_TOKEN`   | no         | Bitbucket Cloud API token; the Bitbucket tools appear only when it is set        |
@@ -108,7 +109,22 @@ All 38 Jira and Confluence tools keep the names and parameters documented in the
 
 When `BITBUCKET_API_TOKEN` is set, the 22 Bitbucket tools are added with the names and parameters in the [@ameforge/bitbucket-mcp README](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket#tools).
 
+`usage_report` is one more tool. It is registered once in this package and covers every bundled package; see the Usage log section below.
+
 All logs go to stderr; stdout is reserved for the MCP protocol.
+
+## Usage log
+
+Every tool call is logged to a local file with the time, the package, the tool name and whether the call succeeded. Each call is counted under the package it came from (`jira`, `confluence` or `bitbucket`). Arguments and content are never logged, and nothing is sent anywhere.
+
+The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
+
+Call the `usage_report` tool to read the log. Its optional parameters are:
+
+- `days`: how many days back to count (default 30).
+- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days and all time, totals for done, calls and errors, a done per day chart, a table per tool and a button that saves a PNG share card.
+
+Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write.
 
 ## Development
 

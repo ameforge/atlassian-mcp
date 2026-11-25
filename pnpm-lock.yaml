@@ -29,6 +29,9 @@ importers:
 
   packages/atlassian:
     devDependencies:
+      '@ameforge/atlassian-request':
+        specifier: workspace:*
+        version: link:../request
       '@ameforge/bitbucket-mcp':
         specifier: workspace:*
         version: link:../bitbucket
@@ -102,7 +105,11 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
 
-  packages/request: {}
+  packages/request:
+    devDependencies:
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
 packages:
 
