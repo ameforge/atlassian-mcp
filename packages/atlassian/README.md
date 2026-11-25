@@ -78,6 +78,7 @@ Official setup guides:
 
 | Variable                | Required   | Description                                                                      |
 | ----------------------- | ---------- | -------------------------------------------------------------------------------- |
+| `ATLASSIAN_MCP_TOOLS`   | no         | Comma-separated tool or package names to expose (default all)                    |
 | `ATLASSIAN_MCP_USAGE`   | no         | Set to `off` to turn off the local usage log (see Usage log)                     |
 | `ATLASSIAN_PASSWORD`    | yes*       | Password for Jira and Confluence                                                 |
 | `ATLASSIAN_USERNAME`    | yes*       | Username for Jira and Confluence                                                 |
@@ -110,6 +111,8 @@ All 38 Jira and Confluence tools keep the names and parameters documented in the
 When `BITBUCKET_API_TOKEN` is set, the 22 Bitbucket tools are added with the names and parameters in the [@ameforge/bitbucket-mcp README](https://github.com/ameforge/atlassian-mcp/tree/main/packages/bitbucket#tools).
 
 `usage_report` is one more tool. It is registered once in this package and covers every bundled package; see the Usage log section below.
+
+To keep unused tools out of the model's context, set `ATLASSIAN_MCP_TOOLS` to a comma-separated list of packages and tool names, for example `jira,get_page,confluence_add_comment`. A bare `add_comment` keeps both products' copies, `usage_report` always stays, and Bitbucket tools still need `BITBUCKET_API_TOKEN`.
 
 All logs go to stderr; stdout is reserved for the MCP protocol.
 

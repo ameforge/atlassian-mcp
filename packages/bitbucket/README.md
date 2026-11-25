@@ -63,6 +63,7 @@ Official setup guides:
 | Variable              | Required | Description                                                         |
 | --------------------- | -------- | ------------------------------------------------------------------- |
 | `ATLASSIAN_MCP_USAGE` | no       | Set to `off` to turn off the local usage log (see Usage log)        |
+| `ATLASSIAN_MCP_TOOLS` | no       | Comma-separated tool or package names to expose (default all)       |
 | `BITBUCKET_EMAIL`     | yes      | Atlassian account email; `ATLASSIAN_EMAIL` is read when it is unset |
 | `BITBUCKET_API_TOKEN` | yes      | API token; `ATLASSIAN_API_TOKEN` is read when it is unset           |
 | `BITBUCKET_WORKSPACE` | no       | Default workspace slug; without it every tool needs `workspace`     |

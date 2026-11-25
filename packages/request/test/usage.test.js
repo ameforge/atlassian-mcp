@@ -10,6 +10,7 @@ import {registerUsageReport, withUsage} from "../src/usage.js";
 beforeEach(async () => {
   process.env.XDG_CONFIG_HOME = await mkdtemp(join(tmpdir(), "usage-"));
   delete process.env.ATLASSIAN_MCP_USAGE;
+  delete process.env.ATLASSIAN_MCP_TOOLS;
 });
 
 const ok = {content: [{text: "done", type: "text"}]};
@@ -102,4 +103,47 @@ test("usage_report html writes a board with the counts and opens it", async () =
   assert.ok(text.includes(board));
   const html = await readFile(board, "utf8");
   assert.match(html, /"tool":"log_work"/);
+});
+
+const registered = (pkg, names) => {
+  const server = fakeServer();
+  for (const name of names)
+    withUsage(server, pkg).registerTool(name, {}, async () => ok);
+  return [...server.tools.keys()];
+};
+
+test("ATLASSIAN_MCP_TOOLS unset or empty registers every tool", () => {
+  assert.deepEqual(registered("jira", ["get_ticket", "log_work"]), [
+    "get_ticket",
+    "log_work",
+  ]);
+  process.env.ATLASSIAN_MCP_TOOLS = " , ";
+  assert.deepEqual(registered("jira", ["get_ticket", "log_work"]), [
+    "get_ticket",
+    "log_work",
+  ]);
+});
+
+test("ATLASSIAN_MCP_TOOLS allows a package or a tool, trimmed and in any case", () => {
+  process.env.ATLASSIAN_MCP_TOOLS = " JIRA , Get_Page ";
+  assert.deepEqual(registered("jira", ["get_ticket", "log_work"]), [
+    "get_ticket",
+    "log_work",
+  ]);
+  assert.deepEqual(registered("confluence", ["get_page", "create_page"]), [
+    "get_page",
+  ]);
+});
+
+test("ATLASSIAN_MCP_TOOLS prefixed entry allows only that product's copy", () => {
+  process.env.ATLASSIAN_MCP_TOOLS = "jira_add_comment";
+  assert.deepEqual(registered("jira", ["add_comment", "get_ticket"]), [
+    "add_comment",
+  ]);
+  assert.deepEqual(registered("confluence", ["add_comment"]), []);
+});
+
+test("ATLASSIAN_MCP_TOOLS never hides usage_report", async () => {
+  process.env.ATLASSIAN_MCP_TOOLS = "jira";
+  assert.match(await report(), /0 done, 0 calls/);
 });

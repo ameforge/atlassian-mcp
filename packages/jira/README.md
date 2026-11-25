@@ -65,6 +65,7 @@ Official setup guides:
 | Variable                | Required | Description                                                     |
 | ----------------------- | -------- | --------------------------------------------------------------- |
 | `ATLASSIAN_MCP_USAGE`   | no       | Set to `off` to turn off the local usage log (see Usage log)    |
+| `ATLASSIAN_MCP_TOOLS`   | no       | Comma-separated tool or package names to expose (default all)   |
 | `JIRA_HOST`             | yes      | Base URL, e.g. `https://jira.company.com`                       |
 | `JIRA_USERNAME`         | yes*     | Jira username; `ATLASSIAN_USERNAME` is read when it is unset    |
 | `JIRA_PASSWORD`         | yes*     | Jira password; `ATLASSIAN_PASSWORD` is read when it is unset    |

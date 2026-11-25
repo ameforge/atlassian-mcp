@@ -65,6 +65,7 @@ Official setup guides:
 | Variable              | Required | Description                                                        |
 | --------------------- | -------- | ------------------------------------------------------------------ |
 | `ATLASSIAN_MCP_USAGE` | no       | Set to `off` to turn off the local usage log (see Usage log)       |
+| `ATLASSIAN_MCP_TOOLS` | no       | Comma-separated tool or package names to expose (default all)      |
 | `CONFLUENCE_HOST`     | yes      | Base URL, e.g. `https://conf.company.com`                          |
 | `CONFLUENCE_USERNAME` | yes*     | Confluence username; `ATLASSIAN_USERNAME` is read when it is unset |
 | `CONFLUENCE_PASSWORD` | yes*     | Confluence password; `ATLASSIAN_PASSWORD` is read when it is unset |

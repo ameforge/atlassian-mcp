@@ -35,19 +35,33 @@ const record = async (pkg, tool, ok) => {
   }
 };
 
+const isAllowed = (pkg, name) => {
+  const allow = (process.env.ATLASSIAN_MCP_TOOLS ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+  return (
+    !allow.length ||
+    [pkg, name, `${pkg}_${name}`].some((e) => allow.includes(e))
+  );
+};
+
 /**
- * A server whose tools log each call (tool name and success, never the
- * arguments) to the local usage log.
+ * A server that registers only the tools ATLASSIAN_MCP_TOOLS allows, and whose
+ * tools log each call (tool name and success, never the arguments) to the
+ * local usage log.
  * @param {any} server
  * @param {string} pkg
  */
 export const withUsage = (server, pkg) => ({
-  registerTool: (name, config, handler) =>
-    server.registerTool(name, config, async (...args) => {
+  registerTool: (name, config, handler) => {
+    if (!isAllowed(pkg, name)) return;
+    return server.registerTool(name, config, async (...args) => {
       const result = await handler(...args);
       await record(pkg, name, !result?.isError);
       return result;
-    }),
+    });
+  },
 });
 
 /**
