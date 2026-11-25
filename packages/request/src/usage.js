@@ -50,6 +50,29 @@ export const withUsage = (server, pkg) => ({
     }),
 });
 
+/**
+ * Appends past calls older than the log's first entry, so importing the same
+ * history again adds nothing.
+ * @param {{ok: boolean, pkg: string, t: string, tool: string}[]} entries
+ */
+export const importEntries = async (entries) => {
+  const first = (await readEntries()).reduce(
+    (min, e) => Math.min(min, Date.parse(e.t)),
+    Number.POSITIVE_INFINITY,
+  );
+  const older = entries.filter((e) => Date.parse(e.t) < first);
+  if (older.length) {
+    await mkdir(usageDir(), {recursive: true});
+    await appendFile(
+      usageFile(),
+      older
+        .map(({ok, pkg, t, tool}) => `${JSON.stringify({ok, pkg, t, tool})}\n`)
+        .join(""),
+    );
+  }
+  return {added: older.length, file: usageFile()};
+};
+
 const readEntries = async () => {
   const text = await readFile(usageFile(), "utf8").catch((err) => {
     if (err.code === "ENOENT") return "";

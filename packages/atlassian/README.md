@@ -126,6 +126,14 @@ Call the `usage_report` tool to read the log. Its optional parameters are:
 
 Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write.
 
+The log starts with the first call after install. To add the calls Claude Code made before that, run this once:
+
+```bash
+npx @ameforge/atlassian-mcp import-claude-history
+```
+
+It reads the transcripts under `CLAUDE_CONFIG_DIR` (default `~/.claude`) and keeps only the tool name, time and success of each call to a Jira, Confluence or Bitbucket server. It adds only calls older than the first line of the log, so running it again adds nothing. Several Claude Code folders go in one run, as arguments: `npx @ameforge/atlassian-mcp import-claude-history ~/.claude ~/work-profile`. Other MCP clients keep no history it can read.
+
 ## Development
 
 ```bash
