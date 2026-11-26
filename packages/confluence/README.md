@@ -9,7 +9,19 @@ MCP server for Confluence Server/Data Center (REST API). Lets an AI assistant (C
 
 ## Quick start
 
-Use Claude Code CLI. Run the command in a regular terminal, not inside a Claude Code session. Pick the block for your shell, since each one continues lines differently.
+The quickest way is to let Claude Code install it. Paste this prompt into a Claude Code session, with your own values:
+
+```text
+Add the MCP server "conf-mcp" with `claude mcp add`, running `npx -y conf-mcp@latest`, with these environment variables:
+CONFLUENCE_HOST=https://conf.company.com
+CONFLUENCE_USERNAME=your_username
+CONFLUENCE_PASSWORD=your_password
+Use the command syntax for my shell, then run `claude mcp list` to check that it connects.
+```
+
+Your password becomes part of the conversation this way. To keep it out, run the command below yourself. Either way, restart Claude Code afterwards so it loads the server.
+
+Or run the command yourself in a regular terminal, not inside a Claude Code session. Pick the block for your shell, since each one continues lines differently.
 
 bash / zsh (macOS, Linux, Git Bash or WSL on Windows):
 
