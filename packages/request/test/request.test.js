@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import {test} from "node:test";
 import {productRequest} from "../src/index.js";
 
-const {send} = productRequest({name: "Acme", replayable: ["GET"]});
+const {fetchHeaders, send} = productRequest({
+  name: "Acme",
+  replayable: ["GET"],
+});
 
 // Answers each call with the next [status, body]; records every method sent.
 const stubFetch = (answers) => {
@@ -83,3 +86,28 @@ for (const [method, says] of [
     await assert.rejects(send(method, "https://acme/x"), {message: says});
   });
 }
+
+// A silent server must not hang an attachment download, but a slow body must not be cut.
+test("fetchHeaders times out waiting for headers only", {
+  timeout: 2000,
+}, async (t) => {
+  t.mock.timers.enable({apis: ["setTimeout"]});
+  let signal;
+  globalThis.fetch = (_url, init) =>
+    new Promise((_, reject) => {
+      init.signal.addEventListener("abort", () => reject(init.signal.reason));
+    });
+  const silent = fetchHeaders("https://acme/a");
+  t.mock.timers.tick(30_000);
+  await assert.rejects(silent, {
+    message: "Acme did not answer within 30s; safe to retry",
+  });
+
+  globalThis.fetch = async (_url, init) => {
+    signal = init.signal;
+    return {ok: true};
+  };
+  await fetchHeaders("https://acme/a");
+  t.mock.timers.tick(30_000);
+  assert.equal(signal.aborted, false);
+});

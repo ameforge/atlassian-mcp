@@ -29,7 +29,7 @@ const HEADERS = {
 
 // A 500 on POST may already have created a comment, a worklog or a
 // transition, so only GET and PUT are replayed.
-const {onTimeout, send} = productRequest({
+const {fetchHeaders, onTimeout, send} = productRequest({
   name: "Jira",
   replayable: ["GET", "PUT"],
 });
@@ -48,7 +48,7 @@ export const jiraRequest = (method, path, body) =>
 // Attachment content is binary and lives at an absolute URL outside
 // /rest/api/2, so it cannot go through jiraRequest. Returns base64.
 export const jiraDownload = async (url) => {
-  const res = await fetch(url, {headers: {Authorization: AUTH_HEADER}});
+  const res = await fetchHeaders(url, {headers: {Authorization: AUTH_HEADER}});
   if (!res.ok) throw new Error(`Jira attachment ${res.status}`);
   return Buffer.from(await res.arrayBuffer()).toString("base64");
 };

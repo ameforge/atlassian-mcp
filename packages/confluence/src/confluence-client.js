@@ -26,7 +26,7 @@ const HEADERS = {
 };
 
 // Only GET is replayed: a 500 on a write may already have saved it.
-const {send} = productRequest({
+const {fetchHeaders, send} = productRequest({
   name: "Confluence",
   parse: (res) => (res.status === 204 ? null : res.json()),
   replayable: ["GET"],
@@ -46,7 +46,7 @@ export const confluenceRequest = (method, path, body) => {
 
 /** Fetch raw bytes from a site-relative path, e.g. an attachment's `_links.download`. */
 export const confluenceDownload = async (path) => {
-  const res = await fetch(`${HOST}${path}`, {
+  const res = await fetchHeaders(`${HOST}${path}`, {
     headers: {Authorization: HEADERS.Authorization},
   });
   if (!res.ok) {

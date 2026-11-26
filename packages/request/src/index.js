@@ -88,5 +88,21 @@ export const productRequest = ({
     }
   };
 
-  return {onTimeout, send};
+  // Bounds only the wait for headers: a large attachment body may rightly take longer than TIMEOUT_MS.
+  const fetchHeaders = async (url, init = {}) => {
+    const ctl = new AbortController();
+    const timer = setTimeout(
+      () => ctl.abort(new DOMException("timeout", "TimeoutError")),
+      TIMEOUT_MS,
+    );
+    try {
+      return await fetch(url, {...init, signal: ctl.signal}).catch(
+        onTimeout(init.method ?? "GET"),
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+
+  return {fetchHeaders, onTimeout, send};
 };
