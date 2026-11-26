@@ -7,6 +7,9 @@ import {fakeServer} from "./helpers/fake-server.js";
 
 // Error texts are the ones Jira Data Center returned in real sessions.
 const ISSUE_TYPE_JQL = `Jira API 400: {"errorMessages":["The value 'QA-Subtask' does not exist for the field 'issuetype'."],"errors":{}}`;
+const PRIORITY_JQL = `Jira API 400: {"errorMessages":["The value 'Highest' does not exist for the field 'priority'."],"errors":{}}`;
+const ASSIGNEE_JQL = `Jira API 400: {"errorMessages":["The value 'Nguyen Van A' does not exist for the field 'assignee'."],"errors":{}}`;
+const NO_TIMETRACKING = `Jira API 400: {"errorMessages":[],"errors":{"timetracking":"Field 'timetracking' cannot be set. It is not on the appropriate screen, or unknown."}}`;
 const ISSUE_TYPE_FIELD = `Jira API 400: {"errorMessages":[],"errors":{"issuetype":"Could not find issuetype by id or name."}}`;
 
 const UPDATE_PLAN = "/issue/PROJ-12?fields=issuetype,status,project";
@@ -20,7 +23,11 @@ const LOOKUPS = {
     id: "12",
   },
   "/issuetype": [{name: "Task"}, {name: "QA Sub-Task"}, {name: "Task"}],
+  "/priority": [{name: "High"}, {name: "Low"}],
   "/project/PROJ": {issueTypes: [{name: "Story"}, {name: "QA Sub-Task"}]},
+  "/user/search?maxResults=10&username=Nguyen+Van+A": [
+    {displayName: "Nguyen Van A", name: "anv"},
+  ],
 };
 
 const call = async (register, name, args, jiraError) => {
@@ -47,6 +54,22 @@ for (const [register, name, args, jiraError, lookup, valid] of [
     "Valid issue types: Task, QA Sub-Task",
   ],
   [
+    registerSearchTickets,
+    "search_tickets",
+    {jql: "priority = Highest"},
+    PRIORITY_JQL,
+    "/priority",
+    "Valid priorities: High, Low",
+  ],
+  [
+    registerSearchTickets,
+    "search_tickets",
+    {jql: 'assignee = "Nguyen Van A"'},
+    ASSIGNEE_JQL,
+    "/user/search?maxResults=10&username=Nguyen+Van+A",
+    "Valid users (JQL takes the username): anv (Nguyen Van A)",
+  ],
+  [
     registerCreateTicket,
     "create_ticket",
     {issue_type: "QA-Subtask", project: "PROJ", summary: "x"},
@@ -64,7 +87,7 @@ for (const [register, name, args, jiraError, lookup, valid] of [
     "Valid issue types: Story, QA Sub-Task",
   ],
 ]) {
-  test(`${name} lists the valid names when Jira rejects the type`, async () => {
+  test(`${name} lists the valid names for ${lookup}`, async () => {
     const r = await call(register, name, args, jiraError);
     assert.equal(r.text, `${jiraError}\n${valid}`);
     assert.deepEqual(r.lookups, [lookup].flat());
@@ -98,4 +121,14 @@ test("update_ticket clears a date given as an empty string", async () => {
   assert.deepEqual(bodies, [
     {fields: {customfield_11300: null, duedate: null}},
   ]);
+});
+
+test("update_ticket says why Jira refuses an estimate", async () => {
+  const r = await call(
+    registerUpdateTicket,
+    "update_ticket",
+    {original_estimate: "2h", ticket_id: "PROJ-1"},
+    NO_TIMETRACKING,
+  );
+  assert.match(r.text, /no Time Tracking field/);
 });

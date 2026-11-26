@@ -1,7 +1,7 @@
 import {z} from "zod";
 import {defineTool} from "../../define-tool.js";
 import {START_DATE_FIELD} from "../../ticket-fields.js";
-import {withIssueTypes} from "../../valid-names.js";
+import {withJqlNames} from "../../valid-names.js";
 
 const COLUMNS = [
   "KEY",
@@ -41,7 +41,7 @@ export const registerSearchTickets = (server, jiraRequest) => {
         jql,
         maxResults: String(max_results),
       });
-      const data = await withIssueTypes(
+      const data = await withJqlNames(
         () => jira("GET", `/search?${params}`),
         jira,
       );

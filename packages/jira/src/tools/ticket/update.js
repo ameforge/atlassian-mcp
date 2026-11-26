@@ -2,7 +2,7 @@ import {z} from "zod";
 import {runBatch} from "../../batch.js";
 import {defineTool} from "../../define-tool.js";
 import {EPIC_LINK_FIELD, START_DATE_FIELD} from "../../ticket-fields.js";
-import {withIssueTypes} from "../../valid-names.js";
+import {estimateHint, withIssueTypes} from "../../valid-names.js";
 import {formSession} from "../../web-form.js";
 import {planTypeChange, runTypeWizard} from "./change-type.js";
 import {moveSubtaskParent} from "./move-subtask.js";
@@ -200,6 +200,8 @@ export const registerUpdateTicket = (
         jira,
         ticket_id.replace(/-\d+$/, ""),
       ).catch((err) => {
+        const hint = estimateHint(err.message);
+        if (hint) err.message += `\n${hint}`;
         if (!changed.length) throw err;
         throw new Error(
           `${ticket_id}: changed ${changed.join(" and ")}, but the other fields were not saved: ${err.message}`,

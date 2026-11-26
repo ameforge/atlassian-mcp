@@ -9,7 +9,10 @@ const create = async (params, {failEstimate = false} = {}) => {
   registerCreateTicket(server, async (method, path, body) => {
     calls.push({body, method, path});
     if (method === "POST") return {key: "PROJ-7"};
-    if (failEstimate) throw new Error("Jira API 500: boom");
+    if (failEstimate)
+      throw new Error(
+        failEstimate === true ? "Jira API 500: boom" : failEstimate,
+      );
     return null;
   });
   const result = await server.tools.get("create_ticket")({
@@ -49,4 +52,15 @@ test("create_ticket still reports the key when the estimate fails", async () => 
   assert.match(result.content[0].text, /Created PROJ-7/);
   assert.match(result.content[0].text, /was not applied/);
   assert.match(result.content[0].text, /update_ticket/);
+});
+
+test("create_ticket does not send a refused estimate to update_ticket", async () => {
+  const {result} = await create(
+    {original_estimate: "8h"},
+    {
+      failEstimate: `Jira API 400: {"errorMessages":[],"errors":{"timetracking":"Field 'timetracking' cannot be set. It is not on the appropriate screen, or unknown."}}`,
+    },
+  );
+  assert.match(result.content[0].text, /no Time Tracking field/);
+  assert.doesNotMatch(result.content[0].text, /update_ticket/);
 });

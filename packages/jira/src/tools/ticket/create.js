@@ -2,7 +2,7 @@ import {z} from "zod";
 import {defineTool} from "../../define-tool.js";
 import {JIRA_HOST} from "../../jira-client.js";
 import {START_DATE_FIELD} from "../../ticket-fields.js";
-import {withIssueTypes} from "../../valid-names.js";
+import {estimateHint, withIssueTypes} from "../../valid-names.js";
 
 export const registerCreateTicket = (server, jiraRequest) => {
   defineTool(
@@ -82,7 +82,10 @@ export const registerCreateTicket = (server, jiraRequest) => {
             },
           });
         } catch (err) {
-          return `Created ${result.key}: ${url}\nWarning: original_estimate "${original_estimate}" was not applied (${err.message}). The ticket exists, so set the estimate with update_ticket.`;
+          const fix =
+            estimateHint(err.message) ??
+            "The ticket exists, so set the estimate with update_ticket.";
+          return `Created ${result.key}: ${url}\nWarning: original_estimate "${original_estimate}" was not applied (${err.message}). ${fix}`;
         }
       }
       return `Created ${result.key}: ${url}`;
