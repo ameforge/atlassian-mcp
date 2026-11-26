@@ -73,11 +73,7 @@ export const registerCreateTicket = (server, jiraRequest) => {
       );
       const url = `${JIRA_HOST}/browse/${result.key}`;
 
-      // timetracking in the create payload makes Jira Data Center answer a bare
-      // 500 ({"errorMessages":["Internal server error"]}), so the estimate goes
-      // on afterwards through the same update.timetracking.edit path
-      // update_ticket uses. The key is reported either way: losing it on a
-      // failed estimate would send the caller back to create a duplicate.
+      // timetracking in the create payload makes Jira Data Center answer a bare 500, so it is set after.
       if (original_estimate) {
         try {
           await jira("PUT", `/issue/${result.key}`, {
