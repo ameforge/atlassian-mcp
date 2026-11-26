@@ -295,3 +295,44 @@ test("get_ticket lists worklogs with their IDs from the worklog endpoint", async
     /#20001 \[2026-07-02\] Alice 2h \[code\/review\]: pairing/,
   );
 });
+
+test("get_ticket reads several comma-separated keys and names the one that failed", async () => {
+  const server = fakeServer();
+  const paths = [];
+  registerGetTicket(server, async (_method, path) => {
+    paths.push(path);
+    const key = path.match(/^\/issue\/([^?]+)/)[1];
+    if (key === "PROJ-2") throw new Error("Jira API 404: Issue Does Not Exist");
+    return {fields: {status: {name: "Open"}, summary: `S-${key}`}, key};
+  });
+
+  const result = await server.tools.get("get_ticket")({
+    ticket_id: "PROJ-1, PROJ-2,PROJ-3",
+  });
+  const text = result.content[0].text;
+  assert.deepEqual(paths, [
+    `/issue/PROJ-1?fields=${FIELDS}`,
+    `/issue/PROJ-2?fields=${FIELDS}`,
+    `/issue/PROJ-3?fields=${FIELDS}`,
+  ]);
+  // A partial read must not pass for a full one.
+  assert.equal(result.isError, true);
+  assert.match(text, /Key: PROJ-1\nSummary: S-PROJ-1/);
+  assert.match(text, /PROJ-2 failed: Jira API 404/);
+  assert.match(text, /Key: PROJ-3\nSummary: S-PROJ-3/);
+});
+
+test("get_ticket refuses images for several keys before reading any", async () => {
+  const server = fakeServer();
+  const paths = [];
+  registerGetTicket(server, async (_method, path) => {
+    paths.push(path);
+  });
+  const result = await server.tools.get("get_ticket")({
+    include_images: true,
+    ticket_id: "PROJ-1,PROJ-2",
+  });
+  assert.equal(result.isError, true);
+  assert.match(result.content[0].text, /one ticket at a time/);
+  assert.deepEqual(paths, []);
+});

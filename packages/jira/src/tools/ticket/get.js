@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {runBatch} from "../../batch.js";
 import {defineTool} from "../../define-tool.js";
 import {jiraDownload} from "../../jira-client.js";
 import {START_DATE_FIELD} from "../../ticket-fields.js";
@@ -94,6 +95,70 @@ const formatWorklogs = async (jira, {worklogs = [], total = 0} = {}) => {
   return `Worklogs (${count}):\n${body}`;
 };
 
+const readTicket = async (
+  jira,
+  download,
+  ticket_id,
+  {
+    include_comments = false,
+    include_images = false,
+    include_worklogs = false,
+    image_limit = IMAGE_LIMIT,
+  },
+) => {
+  // Without ?fields= Jira returns every field, inline comments and worklogs included.
+  const fields = [
+    "summary,status,assignee,reporter,priority,duedate,timetracking",
+    `labels,description,subtasks,attachment,${START_DATE_FIELD}`,
+    include_comments ? "comment" : null,
+  ]
+    .filter(Boolean)
+    .join(",");
+  const issue = await jira("GET", `/issue/${ticket_id}?fields=${fields}`);
+  const f = issue.fields;
+  const subtasks = (f.subtasks || [])
+    .map((s) => `  - ${s.key}: ${s.fields.summary}`)
+    .join("\n");
+  // Unset fields are omitted, not printed as "Not set": the caller pays tokens for every line.
+  const line = (label, value) => (value ? `${label}: ${value}` : null);
+  const attachments = f.attachment || [];
+  const images = include_images
+    ? await fetchImages(attachments, download, image_limit)
+    : {blocks: [], notes: []};
+  // Jira caps the inline worklog field and may drop the newest, so read the list from its endpoint.
+  const worklogs = include_worklogs
+    ? await formatWorklogs(
+        jira,
+        (await jira("GET", `/issue/${ticket_id}/worklog`)) ?? {},
+      )
+    : null;
+  const text = [
+    `Key: ${issue.key}`,
+    `Summary: ${f.summary}`,
+    `Status: ${f.status?.name}`,
+    `Assignee: ${f.assignee?.displayName || "Unassigned"}`,
+    line("Reporter", f.reporter?.displayName),
+    line("Priority", f.priority?.name),
+    line("Start Date", f[START_DATE_FIELD]),
+    line("Due Date", f.duedate),
+    line("Original Estimate", f.timetracking?.originalEstimate),
+    line("Labels", (f.labels || []).join(", ")),
+    f.description ? `Description:\n${f.description}` : null,
+    subtasks ? `Subtasks:\n${subtasks}` : null,
+    include_comments ? formatComments(f.comment) : null,
+    worklogs,
+    line(
+      "Attachments",
+      attachments.map((a) => `${a.filename} (#${a.id})`).join(", "),
+    ),
+    images.notes.length ? `Images:\n${images.notes.join("\n")}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+  if (!images.blocks.length) return text;
+  return [{text, type: "text"}, ...images.blocks];
+};
+
 export const registerGetTicket = (
   server,
   jiraRequest,
@@ -104,7 +169,7 @@ export const registerGetTicket = (
     "get_ticket",
     {
       description:
-        "Get full details of a Jira ticket by its key. For a single comment (a ?focusedCommentId= link), use get_comment instead.",
+        "Get full details of a Jira ticket by its key, or of several tickets at once with comma-separated keys (e.g. after search_tickets). For a single comment (a ?focusedCommentId= link), use get_comment instead.",
       inputSchema: z.object({
         image_limit: z
           .number()
@@ -131,70 +196,26 @@ export const registerGetTicket = (
           .describe(
             "Include the ticket's worklogs with their IDs and WorklogPRO types (default false; one extra request plus one per worklog shown)",
           ),
-        ticket_id: z.string().describe("Jira issue key, e.g. PROJ-234"),
+        ticket_id: z
+          .string()
+          .describe(
+            "Jira issue key, e.g. PROJ-234, or several separated by commas",
+          ),
       }),
     },
-    async (
-      {
-        ticket_id,
-        include_comments,
-        include_images,
-        include_worklogs,
-        image_limit,
-      },
-      jira,
-    ) => {
-      // Without ?fields= Jira returns every field, inline comments and worklogs included.
-      const fields = [
-        "summary,status,assignee,reporter,priority,duedate,timetracking",
-        `labels,description,subtasks,attachment,${START_DATE_FIELD}`,
-        include_comments ? "comment" : null,
-      ]
-        .filter(Boolean)
-        .join(",");
-      const issue = await jira("GET", `/issue/${ticket_id}?fields=${fields}`);
-      const f = issue.fields;
-      const subtasks = (f.subtasks || [])
-        .map((s) => `  - ${s.key}: ${s.fields.summary}`)
-        .join("\n");
-      // Unset fields are omitted, not printed as "Not set": the caller pays tokens for every line.
-      const line = (label, value) => (value ? `${label}: ${value}` : null);
-      const attachments = f.attachment || [];
-      const images = include_images
-        ? await fetchImages(attachments, download, image_limit ?? IMAGE_LIMIT)
-        : {blocks: [], notes: []};
-      // Jira caps the inline worklog field and may drop the newest, so read the list from its endpoint.
-      const worklogs = include_worklogs
-        ? await formatWorklogs(
-            jira,
-            (await jira("GET", `/issue/${ticket_id}/worklog`)) ?? {},
-          )
-        : null;
-      const text = [
-        `Key: ${issue.key}`,
-        `Summary: ${f.summary}`,
-        `Status: ${f.status?.name}`,
-        `Assignee: ${f.assignee?.displayName || "Unassigned"}`,
-        line("Reporter", f.reporter?.displayName),
-        line("Priority", f.priority?.name),
-        line("Start Date", f[START_DATE_FIELD]),
-        line("Due Date", f.duedate),
-        line("Original Estimate", f.timetracking?.originalEstimate),
-        line("Labels", (f.labels || []).join(", ")),
-        f.description ? `Description:\n${f.description}` : null,
-        subtasks ? `Subtasks:\n${subtasks}` : null,
-        include_comments ? formatComments(f.comment) : null,
-        worklogs,
-        line(
-          "Attachments",
-          attachments.map((a) => `${a.filename} (#${a.id})`).join(", "),
-        ),
-        images.notes.length ? `Images:\n${images.notes.join("\n")}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n");
-      if (!images.blocks.length) return text;
-      return [{text, type: "text"}, ...images.blocks];
+    async ({ticket_id, ...opts}, jira) => {
+      const keys = [...new Set(ticket_id.split(/[\s,]+/).filter(Boolean))];
+      if (keys.length <= 1)
+        return readTicket(jira, download, keys[0] ?? ticket_id, opts);
+      // Up to 5 images per ticket would overrun the per-request image caps.
+      if (opts.include_images)
+        throw new Error(
+          "include_images reads one ticket at a time; pass a single key",
+        );
+      return runBatch(
+        keys,
+        async (key) => `${await readTicket(jira, download, key, opts)}\n`,
+      );
     },
     jiraRequest,
   );
