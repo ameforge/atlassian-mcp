@@ -1,11 +1,6 @@
-// Publishes packages/<dir> at HEAD to its mirror repo <pkg> as one commit on top of
-// the mirror's main, tagged v<version>. The mirrors exist only to keep their
-// GitHub stars; all development happens in this monorepo.
-// commit-tree instead of `git subtree split`: split loses history across the
-// conf-mcp -> confluence-mcp folder rename.
+// commit-tree, not `git subtree split`: split loses history across the conf-mcp -> confluence-mcp rename.
 import {execFileSync} from "node:child_process";
 
-// mirror repo name -> folder under packages/
 const MIRRORS = new Map([
   ["bitbucket-mcp", "bitbucket"],
   ["confluence-mcp", "confluence"],
@@ -30,9 +25,7 @@ if (hasMain) {
   git("fetch", url, "main");
   parent = ["-p", git("rev-parse", "FETCH_HEAD")];
 }
-// The only LICENSE lives at the repo root; add it to the mirror's tree.
-// --full-tree: release-it runs this from packages/<dir>, where a plain ls-tree
-// lists nothing.
+// --full-tree: release-it runs this from packages/<dir>, where a plain ls-tree lists nothing.
 const entries = git("ls-tree", "--full-tree", `HEAD:packages/${dir}`)
   .split("\n")
   .filter((line) => !line.endsWith("\tLICENSE"));
