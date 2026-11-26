@@ -1,7 +1,4 @@
-// Jira, Confluence and Bitbucket answer transient 429/5xx under load. Only a
-// method the product lists as replayable is retried: a 500 on a write may
-// come after the write went through, so a replay could do it twice, and a
-// replayed DELETE's 404 would report a removed item as a failure.
+// Only replayable methods retry a 429/5xx: a write's 500 may come after the write went through.
 const RETRY_STATUS = new Set([429, 500, 502, 503, 504]);
 const MAX_RETRIES = 2;
 const MAX_RETRY_AFTER_S = 10;
@@ -16,15 +13,13 @@ const parseJson = async (res) => {
 };
 
 /**
- * The request rules of one Atlassian product. The client builds the URL and
- * headers; this owns timeouts, retries and how answers and errors read.
  * @param {object} product
- * @param {string} product.name e.g. "Jira", in every error message
- * @param {string[]} product.replayable methods safe to send twice
- * @param {boolean} [product.retryAfter] wait as long as a 429's Retry-After asks, capped
- * @param {string} [product.effect] what a timed-out write may already have done
- * @param {(text: string) => string} [product.errorText] reads an error body
- * @param {(res: Response) => Promise<any>} [product.parse] reads a 2xx body
+ * @param {string} product.name
+ * @param {string[]} product.replayable
+ * @param {boolean} [product.retryAfter]
+ * @param {string} [product.effect]
+ * @param {(text: string) => string} [product.errorText]
+ * @param {(res: Response) => Promise<any>} [product.parse]
  */
 export const productRequest = ({
   name,
@@ -35,9 +30,6 @@ export const productRequest = ({
   parse = parseJson,
 }) => {
   /**
-   * Turns fetch's bare TimeoutError into one the caller can act on: a write
-   * that timed out may still have gone through, and a blind retry of a POST
-   * does it twice. Any other error passes through.
    * @param {string} method
    * @returns {(err: Error) => never}
    */
@@ -52,9 +44,8 @@ export const productRequest = ({
 
   /**
    * @param {string} method
-   * @param {string} url absolute
+   * @param {string} url
    * @param {{body?: any, headers?: Record<string, string>, raw?: boolean, timeout?: boolean}} [init]
-   *   body goes to fetch as is; raw returns the body text; timeout: false for an upload that may rightly take longer
    */
   const send = async (
     method,

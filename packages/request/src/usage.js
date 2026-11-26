@@ -46,9 +46,7 @@ const isAllowed = (pkg, name) => {
 };
 
 /**
- * A server that registers only the tools ATLASSIAN_MCP_TOOLS allows, and whose
- * tools log each call (tool name and success, never the arguments) to the
- * local usage log.
+ * Logs the tool name and success of each call, never its arguments.
  * @param {any} server
  * @param {string} pkg
  */
@@ -63,11 +61,7 @@ export const withUsage = (server, pkg) => ({
   },
 });
 
-/**
- * Appends past calls older than the log's first entry, so importing the same
- * history again adds nothing.
- * @param {{ok: boolean, pkg: string, t: string, tool: string}[]} entries
- */
+/** @param {{ok: boolean, pkg: string, t: string, tool: string}[]} entries */
 export const importEntries = async (entries) => {
   const first = (await readEntries()).reduce(
     (min, e) => Math.min(min, Date.parse(e.t)),
@@ -105,7 +99,6 @@ const readEntries = async () => {
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-/** Calls, errors and done (successful writes) of a list of entries. */
 const tally = (entries) => {
   const errors = entries.filter((e) => !e.ok).length;
   const writes = entries.filter((e) => !READ.test(e.tool));
@@ -151,8 +144,7 @@ const textReport = (entries, days) => {
   return lines.join("\n");
 };
 
-// The whole log goes into the page, so its range buttons need no server.
-// "<" is escaped so no logged text can close the script tag.
+// The whole log goes in so the range buttons need no server; "<" is escaped so it cannot close the script.
 const boardHtml = (entries, generated, days) => `<!doctype html>
 <html lang="en">
 <head>
@@ -718,9 +710,8 @@ const openInBrowser = (file) => {
 };
 
 /**
- * Registers usage_report, which reads the usage log of every package.
  * @param {any} server
- * @param {(file: string) => void} [open] tests pass a stub so no browser starts
+ * @param {(file: string) => void} [open]
  */
 export const registerUsageReport = (server, open = openInBrowser) => {
   server.registerTool(
@@ -744,7 +735,6 @@ export const registerUsageReport = (server, open = openInBrowser) => {
     async ({days = 30, format = "text"}) => {
       try {
         const all = await readEntries();
-        // Calendar days, today included, as the board counts them.
         const since = new Date();
         since.setHours(0, 0, 0, 0);
         since.setDate(since.getDate() - days + 1);

@@ -5,8 +5,6 @@ import {join} from "node:path";
 import {beforeEach, test} from "node:test";
 import {registerUsageReport, withUsage} from "../src/usage.js";
 
-// Each test gets its own config dir, so no test reads another's log or the
-// real one.
 beforeEach(async () => {
   process.env.XDG_CONFIG_HOME = await mkdtemp(join(tmpdir(), "usage-"));
   delete process.env.ATLASSIAN_MCP_USAGE;
@@ -16,7 +14,6 @@ beforeEach(async () => {
 const ok = {content: [{text: "done", type: "text"}]};
 const failed = {content: [{text: "boom", type: "text"}], isError: true};
 
-// A fake McpServer that keeps each registered handler so a test can call it.
 const fakeServer = () => {
   const tools = new Map();
   return {

@@ -7,7 +7,6 @@ const {fetchHeaders, send} = productRequest({
   replayable: ["GET"],
 });
 
-// Answers each call with the next [status, body]; records every method sent.
 const stubFetch = (answers) => {
   const methods = [];
   globalThis.fetch = async (_url, init) => {
@@ -71,7 +70,6 @@ test("send returns null for an empty 2xx body, and the text when raw", async () 
   assert.equal(await send("GET", "https://acme/x", {raw: true}), "diff --git");
 });
 
-// The caller acts on this: retry a read, but check before redoing a write.
 for (const [method, says] of [
   ["GET", /^Acme did not answer within 30s; safe to retry$/],
   [
@@ -87,7 +85,6 @@ for (const [method, says] of [
   });
 }
 
-// A silent server must not hang an attachment download, but a slow body must not be cut.
 test("fetchHeaders times out waiting for headers only", {
   timeout: 2000,
 }, async (t) => {
