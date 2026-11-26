@@ -1,3 +1,4 @@
+import {openBoard} from "@ameforge/atlassian-request/src/usage.js";
 import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {StdioServerTransport} from "@modelcontextprotocol/sdk/server/stdio.js";
 import pkg from "../package.json" with {type: "json"};
@@ -11,6 +12,8 @@ if (process.argv[2] === "import-claude-history") {
   console.log(
     `Imported ${added} past tool calls from Claude Code into ${file}.`,
   );
+} else if (process.argv[2] === "board") {
+  console.log(`Board: ${await openBoard()}`);
 } else {
   const server = new McpServer({
     name: "atlassian-mcp",

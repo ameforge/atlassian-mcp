@@ -743,6 +743,22 @@ const openInBrowser = (file) => {
 };
 
 /**
+ * Writes board.html from the whole log and opens it; returns its path.
+ * @param {number} [days]
+ * @param {(file: string) => void} [open]
+ */
+export const openBoard = async (days = 30, open = openInBrowser) => {
+  const board = join(usageDir(), "board.html");
+  await mkdir(usageDir(), {recursive: true});
+  await writeFile(
+    board,
+    boardHtml(await readEntries(), new Date().toISOString(), days),
+  );
+  open(board);
+  return board;
+};
+
+/**
  * @param {any} server
  * @param {(file: string) => void} [open]
  */
@@ -776,14 +792,7 @@ export const registerUsageReport = (server, open = openInBrowser) => {
           days,
         );
         if (format === "html") {
-          const board = join(usageDir(), "board.html");
-          await mkdir(usageDir(), {recursive: true});
-          await writeFile(
-            board,
-            boardHtml(all, new Date().toISOString(), days),
-          );
-          open(board);
-          text += `\n\nBoard: ${board}`;
+          text += `\n\nBoard: ${await openBoard(days, open)}`;
         }
         if (isOff()) {
           text += "\n\nLogging is off (ATLASSIAN_MCP_USAGE=off).";

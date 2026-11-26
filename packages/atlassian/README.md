@@ -140,6 +140,8 @@ Call the `usage_report` tool to read the log. Its optional parameters are:
 - `days`: how many days back to count (default 30).
 - `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days, for `days` when it is another number, and for all time, totals for done, calls and errors, a done per day chart, a table per tool and a Share card button that shows a card you can download as a PNG or copy.
 
+To open the board without asking the assistant, run `npx @ameforge/atlassian-mcp board` in a terminal, or `! npx @ameforge/atlassian-mcp board` inside Claude Code. It writes `board.html` from the whole log and opens it, with no model turn.
+
 Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write.
 
 The log starts with the first call after install. To add the calls Claude Code made before that, run this once:
