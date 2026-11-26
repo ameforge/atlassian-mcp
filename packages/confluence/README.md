@@ -1,6 +1,6 @@
 # Confluence mcp
 
-MCP server for Confluence Server/Data Center (REST API). Lets an AI assistant (Claude Code, Claude Desktop, ...) read and write your Confluence directly.
+MCP server for Confluence Server/Data Center (REST API). It lets an AI assistant such as Claude Code or Claude Desktop read and write your Confluence.
 
 ## Requirements
 
@@ -108,16 +108,16 @@ Official setup guides:
 
 ### Notes
 
-- Page `body` (create_page/update_page): pass Markdown with `body_format='markdown'` (auto-converted server-side) or raw Confluence storage format (XHTML) by default. Storage format required for Confluence macros (code, panel, expand, TOC) which Markdown cannot express. Example storage: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
+- Page `body` (create_page/update_page): pass Markdown with `body_format='markdown'` (the server converts it), or raw Confluence storage format (XHTML), which is the default. Confluence macros (code, panel, expand, TOC) need storage format, because Markdown cannot express them. Example storage: `<p>Content</p>`, `<ul><li>Item 1</li></ul>`.
 - Comment `body` (add_comment): must be Confluence storage format (XHTML) only.
-- `update_page` is a full replace — to change only the title, omit `body` to keep the existing content (and vice versa).
+- `update_page` replaces the whole page. To change only the title, omit `body` to keep the existing content, and the other way round.
 - Pass `expected_version` (the `version.number` from `get_page`) to `update_page` so it refuses to write when someone saved the page after you read it; the error says so and nothing is written.
-- `patch_page` replaces one exact substring in storage format (XHTML) without resending the full page body, useful for targeted edits to large pages where `update_page` is impractical. `old_string` must match exactly once; errors if found 0 or multiple times. Pass `edits` to make several replacements as one page version: they apply in order, and if any one fails to match, nothing is written.
+- `patch_page` replaces one exact substring in storage format (XHTML) without resending the full page body, which suits small edits to large pages. `old_string` must match exactly once; the call fails if it matches zero or several times. Pass `edits` to make several replacements as one page version: they apply in order, and if any one fails to match, nothing is written.
 - `create_page`, `update_page` and `patch_page` return a short summary (`id`, `title`, `version`, `url`) instead of the full page body.
 - `get_page` accepts a pasted URL in place of an ID: `viewpage.action?pageId=...`, `/spaces/KEY/pages/ID/...` or `/display/SPACE/Title`. Tiny links (`/x/...`) are not supported.
 - `delete_page` only moves the page to trash; you can restore it from the Confluence UI.
 - `search_pages` uses CQL syntax, e.g. `type=page AND space=ENG AND title~"deploy"`. Use `ancestor=<id>` to list every page under a page, or `parent=<id>` for direct children only.
-- For large pages, `get_page`/`get_page_by_title` return at most 40000 characters of body by default (to avoid exceeding tool-output token limits). Control with `body_format`: `storage` (default, XHTML) | `view` (rendered HTML) | `none` (metadata only). Page through large bodies with `body_start` + `body_limit`; check the `truncated` flag in the result. Or pass `save_to` with a local file path to write the full body there (fails if the file exists) and get metadata only back.
+- For large pages, `get_page`/`get_page_by_title` return at most 40000 characters of body by default (to avoid exceeding tool-output token limits). Choose the format with `body_format`: `storage` (default, XHTML) | `view` (rendered HTML) | `none` (metadata only). Page through large bodies with `body_start` + `body_limit`; check the `truncated` flag in the result. Or pass `save_to` with a local file path to write the full body there (fails if the file exists) and get metadata only back.
 - All logs go to stderr; stdout is reserved for the MCP protocol.
 
 ## Usage log

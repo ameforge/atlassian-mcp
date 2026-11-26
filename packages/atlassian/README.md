@@ -114,7 +114,7 @@ Official setup guides:
 
 ## Tools
 
-All 38 Jira and Confluence tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
+All 45 Jira and Confluence tools keep the names and parameters documented in the [g-jira-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/jira#tools) and [conf-mcp](https://github.com/ameforge/atlassian-mcp/tree/main/packages/confluence#tools) READMEs, except the two names both servers use, which carry a product prefix here:
 
 | In g-jira-mcp / conf-mcp | In @ameforge/atlassian-mcp                                   |
 | ------------------------ | ------------------------------------------------------------ |
