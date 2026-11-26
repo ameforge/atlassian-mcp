@@ -11,7 +11,7 @@ The same tools are also served by [@ameforge/atlassian-mcp](https://github.com/a
 
 ## Quick start
 
-The quickest way is to let Claude Code install it. Paste this prompt into a Claude Code session, with your own values:
+You can let Claude Code install it for you. Paste this prompt into a Claude Code session and replace the values with your own:
 
 ```text
 Add the MCP server "bitbucket-mcp" with `claude mcp add`, running `npx -y @ameforge/bitbucket-mcp@latest`, with these environment variables:
@@ -21,9 +21,7 @@ BITBUCKET_WORKSPACE=your-workspace
 Use the command syntax for my shell, then run `claude mcp list` to check that it connects.
 ```
 
-Your API token becomes part of the conversation this way. To keep it out, run the command below yourself. Either way, restart Claude Code afterwards so it loads the server.
-
-Or run the command yourself in a regular terminal, not inside a Claude Code session.
+The prompt puts your API token into the conversation. If you would rather keep it out, run the command below yourself, in a regular terminal rather than a Claude Code session. Either way, restart Claude Code afterwards so it loads the server.
 
 bash / zsh (macOS, Linux, Git Bash or WSL on Windows):
 

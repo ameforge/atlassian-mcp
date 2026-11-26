@@ -9,7 +9,7 @@ MCP server for Jira Server/Data Center (REST API v2). Lets an AI assistant (Clau
 
 ## Quick start
 
-The quickest way is to let Claude Code install it. Paste this prompt into a Claude Code session, with your own values:
+You can let Claude Code install it for you. Paste this prompt into a Claude Code session and replace the values with your own:
 
 ```text
 Add the MCP server "g-jira-mcp" with `claude mcp add`, running `npx -y g-jira-mcp@latest`, with these environment variables:
@@ -19,9 +19,9 @@ JIRA_PASSWORD=your_password
 Use the command syntax for my shell, then run `claude mcp list` to check that it connects.
 ```
 
-Your password becomes part of the conversation this way. To keep it out, run the command below yourself. Either way, restart Claude Code afterwards so it loads the server.
+The prompt puts your password into the conversation. If you would rather keep it out, run the command below yourself, in a regular terminal rather than a Claude Code session. Either way, restart Claude Code afterwards so it loads the server.
 
-Or run the command yourself in a regular terminal, not inside a Claude Code session. Pick the block for your shell, since each one continues lines differently.
+Pick the block for your shell, since each one continues lines differently.
 
 bash / zsh (macOS, Linux, Git Bash or WSL on Windows):
 
