@@ -125,7 +125,7 @@ When `BITBUCKET_API_TOKEN` is set, the 22 Bitbucket tools are added with the nam
 
 `usage_report` is one more tool. It is registered once in this package and covers every bundled package; see the Usage log section below.
 
-To keep unused tools out of the model's context, set `ATLASSIAN_MCP_TOOLS` to a comma-separated list of packages and tool names, for example `jira,get_page,confluence_add_comment`. A bare `add_comment` keeps both products' copies, `usage_report` always stays, and Bitbucket tools still need `BITBUCKET_API_TOKEN`.
+To keep unused tools out of the model's context, set `ATLASSIAN_MCP_TOOLS` to a comma-separated list of packages and tool names, for example `jira,get_page,confluence_add_comment`. A bare `add_comment` keeps both products' copies, `usage_report` always stays, and Bitbucket tools still need `BITBUCKET_API_TOKEN`. `usage_report` ends with an `ATLASSIAN_MCP_TOOLS=` line that lists the tools you called in the report window, ready to copy.
 
 All logs go to stderr; stdout is reserved for the MCP protocol.
 

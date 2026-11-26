@@ -141,6 +141,13 @@ const textReport = (entries, days) => {
       );
     }
   }
+  if (entries.length) {
+    const used = [...new Set(entries.map((e) => e.tool))].sort();
+    lines.push(
+      "",
+      `To expose only the tools used in this window: ATLASSIAN_MCP_TOOLS=${used.join(",")}`,
+    );
+  }
   return lines.join("\n");
 };
 

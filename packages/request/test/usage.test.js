@@ -52,6 +52,7 @@ test("usage_report counts done, read, write and errors per package", async () =>
   assert.match(text, /log_work \(write\): 2 done, 3 calls, 1 error/);
   assert.match(text, /get_ticket \(read\): 1 call/);
   assert.match(text, /confluence: 1 done, 1 call/);
+  assert.match(text, /ATLASSIAN_MCP_TOOLS=create_page,get_ticket,log_work$/m);
 });
 
 test("ATLASSIAN_MCP_USAGE=off logs nothing", async () => {
