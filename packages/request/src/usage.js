@@ -22,11 +22,20 @@ const isOff = () =>
 
 // shortcut: one file that only grows, about 70 bytes a call; rotate it if a
 // user ever logs enough calls for its size to matter.
-const record = async (pkg, tool, ok) => {
+// The status or kind only, never the message: a message can quote ticket text or names.
+const errorKind = (text) =>
+  text.match(/ API (\d{3})\b/)?.[1] ??
+  (/did not answer/.test(text)
+    ? "timeout"
+    : /fetch failed/.test(text)
+      ? "network"
+      : "other");
+
+const record = async (pkg, tool, ok, err) => {
   if (isOff()) return;
   try {
     await mkdir(usageDir(), {recursive: true});
-    const line = {ok, pkg, t: new Date().toISOString(), tool};
+    const line = {err, ok, pkg, t: new Date().toISOString(), tool};
     await appendFile(usageFile(), `${JSON.stringify(line)}\n`);
   } catch (err) {
     // A log that cannot be written must never fail the tool call.
@@ -55,7 +64,14 @@ export const withUsage = (server, pkg) => ({
     if (!isAllowed(pkg, name)) return;
     return server.registerTool(name, config, async (...args) => {
       const result = await handler(...args);
-      await record(pkg, name, !result?.isError);
+      await record(
+        pkg,
+        name,
+        !result?.isError,
+        result?.isError
+          ? errorKind(result.content?.[0]?.text ?? "")
+          : undefined,
+      );
       return result;
     });
   },
@@ -120,6 +136,16 @@ const groupBy = (entries, key) => {
 
 const errorText = (n) => (n ? `, ${plural(n, "error")}` : "");
 
+const errorKinds = (entries) => {
+  const kinds = groupBy(
+    entries.filter((e) => !e.ok && e.err),
+    "err",
+  );
+  return kinds.length
+    ? ` (${kinds.map(([kind, list]) => `${kind} x${list.length}`).join(", ")})`
+    : "";
+};
+
 const textReport = (entries, days) => {
   const all = tally(entries);
   const lines = [
@@ -137,7 +163,7 @@ const textReport = (entries, days) => {
       const kind = READ.test(tool) ? "read" : "write";
       const done = kind === "write" ? `${t.done} done, ` : "";
       lines.push(
-        `  ${tool} (${kind}): ${done}${plural(t.calls, "call")}${errorText(t.errors)}`,
+        `  ${tool} (${kind}): ${done}${plural(t.calls, "call")}${errorText(t.errors)}${errorKinds(toolEntries)}`,
       );
     }
   }

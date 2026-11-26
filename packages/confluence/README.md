@@ -122,7 +122,7 @@ Official setup guides:
 
 ## Usage log
 
-Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
+Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. For a failed call it also keeps the HTTP status, or `timeout`, `network` or `other`, never the error message, and `usage_report` shows those per tool. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
 
 The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
 

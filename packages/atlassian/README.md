@@ -131,7 +131,7 @@ All logs go to stderr; stdout is reserved for the MCP protocol.
 
 ## Usage log
 
-Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. Each call is counted under the package it came from (`jira`, `confluence` or `bitbucket`). Arguments and content are never logged, and nothing is sent anywhere.
+Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. For a failed call it also keeps the HTTP status, or `timeout`, `network` or `other`, never the error message, and `usage_report` shows those per tool. Each call is counted under the package it came from (`jira`, `confluence` or `bitbucket`). Arguments and content are never logged, and nothing is sent anywhere.
 
 The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
 

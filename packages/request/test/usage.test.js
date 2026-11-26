@@ -43,13 +43,16 @@ test("usage_report counts done, read, write and errors per package", async () =>
   await call("log_work");
   await call("get_ticket");
   await call("create_page");
-  answers.log_work = failed;
+  answers.log_work = {
+    content: [{text: 'Jira API 400: {"errorMessages":["x"]}', type: "text"}],
+    isError: true,
+  };
   await call("log_work");
 
   const text = await report();
   assert.match(text, /3 done, 5 calls \(1 read, 4 write\), 1 error/);
   assert.match(text, /jira: 2 done, 4 calls, 1 error/);
-  assert.match(text, /log_work \(write\): 2 done, 3 calls, 1 error/);
+  assert.match(text, /log_work \(write\): 2 done, 3 calls, 1 error \(400 x1\)/);
   assert.match(text, /get_ticket \(read\): 1 call/);
   assert.match(text, /confluence: 1 done, 1 call/);
   assert.match(text, /ATLASSIAN_MCP_TOOLS=create_page,get_ticket,log_work$/m);
