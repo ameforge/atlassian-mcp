@@ -102,7 +102,7 @@ Official setup guides:
 | `search_pages`        | Search content using CQL (Confluence Query Language)                                                                                    | `cql`, `limit` (optional), `start` (optional)                                                                  |
 | `list_spaces`         | List spaces, or fetch a single space by key                                                                                             | `space_key` (optional), `limit` (optional)                                                                     |
 | `add_comment`         | Add a comment to a page                                                                                                                 | `page_id`, `body`                                                                                              |
-| `get_comments`        | Get comments on a page                                                                                                                  | `page_id`                                                                                                      |
+| `get_comments`        | Get comments on a page, 50 per call                                                                                                     | `page_id`, optional: `start` (default 0)                                                                       |
 | `get_user`            | Resolve a user's display name and profile from userKey/username                                                                         | `key` or `username`                                                                                            |
 | `usage_report`        | Done, calls and errors from the local usage log, per package and tool; with `format` set to `html`, also writes and opens a board page  | optional: `days` (default 30), `format` (`text` or `html`)                                                     |
 
@@ -122,14 +122,14 @@ Official setup guides:
 
 ## Usage log
 
-Every tool call is logged to a local file with the time, the package, the tool name and whether the call succeeded. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
+Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
 
 The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
 
 Call the `usage_report` tool to read the log. Its optional parameters are:
 
 - `days`: how many days back to count (default 30).
-- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days and all time, totals for done, calls and errors, a done per day chart, a table per tool and a button that saves a PNG share card.
+- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days, for `days` when it is another number, and for all time, totals for done, calls and errors, a done per day chart, a table per tool and a Share card button that shows a card you can download as a PNG or copy.
 
 Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write. Because the file is shared, the report also counts calls made through the other packages.
 
@@ -142,9 +142,9 @@ Done counts the write calls that succeeded. Read tools are those whose names sta
 
 ## Troubleshooting
 
-- 401/403: recheck `CONFLUENCE_USERNAME`/`CONFLUENCE_PASSWORD` and whether the account can access the space.
-- Connection/timeout: verify `CONFLUENCE_HOST` format (starts with `https://`, no trailing `/`), and whether VPN/internal network is required.
-- Error logs: every failed tool call is written to stderr with a timestamp and the tool name, and the startup line shows the server version. On Windows, Claude Code keeps this in `%LOCALAPPDATA%\claude-cli-nodejs\Cache\<project>\mcp-logs-<server name>\`, where `<server name>` is the name you gave the server in your MCP config (for example `conf-mcp`).
+- 401/403: recheck `CONFLUENCE_TOKEN` when it is set, otherwise `CONFLUENCE_USERNAME`/`CONFLUENCE_PASSWORD`, and whether the account can access the space.
+- Connection/timeout: verify that `CONFLUENCE_HOST` includes the scheme (`https://`), and whether VPN/internal network is required.
+- Error logs: every failed tool call except `usage_report` is written to stderr with a timestamp and the tool name, and the startup line shows the server version. On Windows, Claude Code keeps this in `%LOCALAPPDATA%\claude-cli-nodejs\Cache\<project>\mcp-logs-<server name>\`, where `<server name>` is the name you gave the server in your MCP config (for example `conf-mcp`).
 - Reporting a bug: open an issue at <https://github.com/ameforge/atlassian-mcp/issues> with the server version, the tool you called and the matching log lines. Logs can contain page content and internal URLs, so remove anything sensitive before you post. Nothing is sent anywhere automatically.
 
 ## Development

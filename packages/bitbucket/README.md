@@ -117,24 +117,24 @@ Write:
 | `decline_pr`           | Declines the PR                                                                                            |
 | `create_branch`        | Creates `name` from `from` (a branch or commit, default branch if unset); fails if it exists               |
 
-Reviewers are given as display names or account IDs. A display name matches an exact name first, then a unique part of a name. When a name matches no one or several people, the tool sends nothing and lists the candidates.
+Reviewers are given as display names or account IDs. A display name matches an exact name first, then a unique part of a name. When a name matches no one or several people, the tool changes nothing and says why, listing the candidates when there are several.
 
 The state changes are separate tools so an MCP client can allow or deny each one, for example deny `merge_pr` in Claude Code permissions.
 
-Lists stop at a page limit instead of walking a whole history. Their result then has `truncated: true`, and a count that stopped reads like `"500+"`.
+Lists stop at a page limit instead of walking a whole history. Their result then sets `truncated` to true (`files_truncated`, `comments_truncated` or `commits_truncated` in `compare_branches`, `get_diff` and `get_pr`), and a count that stopped reads like `"500+"`.
 
 All logs go to stderr; stdout is reserved for the MCP protocol.
 
 ## Usage log
 
-Every tool call is logged to a local file with the time, the package, the tool name and whether the call succeeded. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
+Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. Arguments and content are never logged, and nothing is sent anywhere. All the Atlassian packages share this one file.
 
 The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
 
 Call the `usage_report` tool to read the log. Its optional parameters are:
 
 - `days`: how many days back to count (default 30).
-- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days and all time, totals for done, calls and errors, a done per day chart, a table per tool and a button that saves a PNG share card.
+- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days, for `days` when it is another number, and for all time, totals for done, calls and errors, a done per day chart, a table per tool and a Share card button that shows a card you can download as a PNG or copy.
 
 Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write. Because the file is shared, the report also counts calls made through the other packages.
 

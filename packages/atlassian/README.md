@@ -131,14 +131,14 @@ All logs go to stderr; stdout is reserved for the MCP protocol.
 
 ## Usage log
 
-Every tool call is logged to a local file with the time, the package, the tool name and whether the call succeeded. Each call is counted under the package it came from (`jira`, `confluence` or `bitbucket`). Arguments and content are never logged, and nothing is sent anywhere.
+Every tool call except `usage_report` is logged to a local file with the time, the package, the tool name and whether the call succeeded. Each call is counted under the package it came from (`jira`, `confluence` or `bitbucket`). Arguments and content are never logged, and nothing is sent anywhere.
 
 The file is `$XDG_CONFIG_HOME/atlassian-mcp/usage.jsonl` when `XDG_CONFIG_HOME` is set. Otherwise it is `%APPDATA%\atlassian-mcp\usage.jsonl` on Windows and `~/.config/atlassian-mcp/usage.jsonl` elsewhere. Set `ATLASSIAN_MCP_USAGE=off` to stop logging. A log that cannot be written never fails a tool call.
 
 Call the `usage_report` tool to read the log. Its optional parameters are:
 
 - `days`: how many days back to count (default 30).
-- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days and all time, totals for done, calls and errors, a done per day chart, a table per tool and a button that saves a PNG share card.
+- `format`: `text` (default) gives a summary per package and tool. `html` also writes `board.html` next to the log and opens it in the browser. The board has range buttons for 7, 30 and 90 days, for `days` when it is another number, and for all time, totals for done, calls and errors, a done per day chart, a table per tool and a Share card button that shows a card you can download as a PNG or copy.
 
 Done counts the write calls that succeeded. Read tools are those whose names start with `get_`, `list_`, `search_`, `find_`, `download_`, `generate_` or `compare_`. Every other tool counts as a write.
 
@@ -148,7 +148,7 @@ The log starts with the first call after install. To add the calls Claude Code m
 npx @ameforge/atlassian-mcp import-claude-history
 ```
 
-It reads the transcripts under `CLAUDE_CONFIG_DIR` (default `~/.claude`) and keeps only the tool name, time and success of each call to a Jira, Confluence or Bitbucket server. It adds only calls older than the first line of the log, so running it again adds nothing. Several Claude Code folders go in one run, as arguments: `npx @ameforge/atlassian-mcp import-claude-history ~/.claude ~/work-profile`. Other MCP clients keep no history it can read.
+It reads the transcripts under `CLAUDE_CONFIG_DIR` (default `~/.claude`) and keeps only the package, tool name, time and success of each call to a Jira, Confluence or Bitbucket server. It adds only calls older than the oldest entry in the log, so running it again adds nothing. Several Claude Code folders go in one run, as arguments: `npx @ameforge/atlassian-mcp import-claude-history ~/.claude ~/work-profile`. Other MCP clients keep no history it can read.
 
 ## Development
 
