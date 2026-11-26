@@ -6,20 +6,15 @@ import {registerTools as registerConfluence} from "conf-mcp/src/register.js";
 import {registerTools as registerJira} from "g-jira-mcp/src/register.js";
 import {registerTools} from "../src/register.js";
 
-// How many tools a package registers on its own, so the expected totals follow
-// the packages instead of being edited by hand on every new tool.
 const count = (register) => {
   let n = 0;
   register({registerTool: () => n++});
   return n;
 };
 const JIRA_AND_CONFLUENCE = count(registerJira) + count(registerConfluence);
-// usage_report reads the log every package writes, so it is registered once.
 const USAGE_REPORT = 1;
 
-// The real McpServer throws on a duplicate tool name, which would stop the
-// combined server at startup. Returns the names registered with the given
-// BITBUCKET_API_TOKEN (undefined: unset).
+// The real McpServer, not a fake: it throws on a duplicate tool name, which stops the bundle at startup.
 const registeredNames = (bitbucketToken) => {
   const saved = process.env.BITBUCKET_API_TOKEN;
   if (bitbucketToken === undefined) delete process.env.BITBUCKET_API_TOKEN;

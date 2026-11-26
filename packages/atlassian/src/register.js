@@ -6,8 +6,7 @@ import {registerTools as registerBitbucket} from "@ameforge/bitbucket-mcp/src/re
 import {registerTools as registerConfluence} from "conf-mcp/src/register.js";
 import {registerTools as registerJira} from "g-jira-mcp/src/register.js";
 
-// Both packages register these names, and one server cannot hold two tools of
-// one name, so here they carry their product as a prefix.
+// Both packages register these names, and one server cannot hold two tools of one name.
 const SHARED = new Set(["add_comment", "download_attachment"]);
 
 const prefixShared = (server, prefix) => ({
@@ -26,8 +25,7 @@ export const registerTools = (server) => {
   registerConfluence(
     withUsage(prefixShared(server, "confluence"), "confluence"),
   );
-  // Bitbucket is Cloud while the others are self-hosted; its tools appear only
-  // for users who configure it, so existing setups see no new tools.
+  // Bitbucket tools appear only when configured, so existing setups see no new tools.
   if (process.env.BITBUCKET_API_TOKEN) {
     registerBitbucket(withUsage(server, "bitbucket"));
   }

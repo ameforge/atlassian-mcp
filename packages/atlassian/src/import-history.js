@@ -20,8 +20,7 @@ const NAMES = {
   jira: toolNames(registerJira),
 };
 
-// Claude Code names a call mcp__<server>__<tool>; the bundle prefixes the
-// shared names with jira_ or confluence_.
+// The bundled server prefixes the shared tool names with jira_ or confluence_.
 const classify = (server, raw) => {
   const [, prefix, rest] = raw.match(/^(jira|confluence)_(.+)$/) ?? [];
   if (prefix && NAMES[prefix].has(rest)) return {pkg: prefix, tool: rest};
@@ -34,12 +33,7 @@ const classify = (server, raw) => {
   return pkg && {pkg, tool: raw};
 };
 
-/**
- * Adds the Atlassian tool calls in past Claude Code transcripts to the usage
- * log. Only the tool name, time and success are read from each call.
- * @param {string[]} [claudeDirs] all at once: a later import adds only calls
- * older than the log's first entry
- */
+/** @param {string[]} [claudeDirs] all at once: a later import adds only calls older than the log */
 export const importClaudeHistory = async (
   claudeDirs = [process.env.CLAUDE_CONFIG_DIR || join(homedir(), ".claude")],
 ) => {
