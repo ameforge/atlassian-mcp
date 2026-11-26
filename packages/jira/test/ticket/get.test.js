@@ -307,7 +307,7 @@ test("get_ticket reads several comma-separated keys and names the one that faile
   });
 
   const result = await server.tools.get("get_ticket")({
-    ticket_id: "PROJ-1, PROJ-2,PROJ-3",
+    ticket_id: "PROJ-1, PROJ-2,PROJ-3 proj-1",
   });
   const text = result.content[0].text;
   assert.deepEqual(paths, [

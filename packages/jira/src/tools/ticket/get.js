@@ -204,7 +204,14 @@ export const registerGetTicket = (
       }),
     },
     async ({ticket_id, ...opts}, jira) => {
-      const keys = [...new Set(ticket_id.split(/[\s,]+/).filter(Boolean))];
+      const keys = [
+        ...new Set(
+          ticket_id
+            .toUpperCase()
+            .split(/[\s,]+/)
+            .filter(Boolean),
+        ),
+      ];
       if (keys.length <= 1)
         return readTicket(jira, download, keys[0] ?? ticket_id, opts);
       // Up to 5 images per ticket would overrun the per-request image caps.
