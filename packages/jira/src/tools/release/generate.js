@@ -52,7 +52,7 @@ export const registerGenerateReleaseNotes = (server, jiraRequest) => {
 
       const fmt = (issues) =>
         issues.map((i) => `- ${i.key}: ${i.fields.summary}`).join("\n");
-      const sections = [`# Release Notes — ${fix_version}\n`];
+      const sections = [`# Release Notes: ${fix_version}\n`];
       if (data.total > data.issues.length) {
         sections.push(
           `Incomplete: only the first ${data.issues.length} of ${data.total} matching issues were read.`,

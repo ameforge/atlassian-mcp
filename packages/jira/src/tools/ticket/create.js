@@ -82,7 +82,7 @@ export const registerCreateTicket = (server, jiraRequest) => {
             },
           });
         } catch (err) {
-          return `Created ${result.key}: ${url}\nWarning: original_estimate "${original_estimate}" was not applied (${err.message}). The ticket exists — set the estimate with update_ticket.`;
+          return `Created ${result.key}: ${url}\nWarning: original_estimate "${original_estimate}" was not applied (${err.message}). The ticket exists, so set the estimate with update_ticket.`;
         }
       }
       return `Created ${result.key}: ${url}`;
