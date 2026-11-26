@@ -3,6 +3,7 @@ import {mkdir, mkdtemp, readFile, writeFile} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {beforeEach, test} from "node:test";
+import {productRequest} from "../src/index.js";
 import {registerUsageReport, withUsage} from "../src/usage.js";
 
 beforeEach(async () => {
@@ -12,7 +13,6 @@ beforeEach(async () => {
 });
 
 const ok = {content: [{text: "done", type: "text"}]};
-const failed = {content: [{text: "boom", type: "text"}], isError: true};
 
 const fakeServer = () => {
   const tools = new Map();
@@ -56,6 +56,40 @@ test("usage_report counts done, read, write and errors per package", async () =>
   assert.match(text, /get_ticket \(read\): 1 call/);
   assert.match(text, /confluence: 1 done, 1 call/);
   assert.match(text, /ATLASSIAN_MCP_TOOLS=create_page,get_ticket,log_work$/m);
+});
+
+// Taken from the request layer, so rewording its timeout message turns this red.
+const timeoutText = async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    throw new DOMException("timeout", "TimeoutError");
+  };
+  try {
+    await productRequest({name: "Jira", replayable: ["GET"]}).send(
+      "GET",
+      "https://jira.test",
+    );
+  } catch (err) {
+    return err.message;
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+};
+
+test("usage_report names a timeout and a network failure", async () => {
+  const server = fakeServer();
+  const texts = [await timeoutText(), "fetch failed"];
+  withUsage(server, "jira").registerTool("get_ticket", {}, async () => ({
+    content: [{text: texts.shift(), type: "text"}],
+    isError: true,
+  }));
+  await server.tools.get("get_ticket")({});
+  await server.tools.get("get_ticket")({});
+
+  const text = await report();
+  assert.match(text, /get_ticket \(read\): 2 calls, 2 errors \(/);
+  assert.match(text, /timeout x1/);
+  assert.match(text, /network x1/);
 });
 
 test("ATLASSIAN_MCP_USAGE=off logs nothing", async () => {
